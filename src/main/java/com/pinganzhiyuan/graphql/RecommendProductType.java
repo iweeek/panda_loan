@@ -2,6 +2,9 @@ package com.pinganzhiyuan.graphql;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.pinganzhiyuan.mapper.ProductMapper;
 import com.pinganzhiyuan.model.Product;
 import com.pinganzhiyuan.model.ProductExample;
@@ -12,10 +15,12 @@ import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLObjectType;
 
+@Component
 public class RecommendProductType {
     
     private static GraphQLFieldDefinition singleQueryField;
     private static GraphQLFieldDefinition listQueryField;
+    
     private static ProductMapper productMapper;
 
     private static GraphQLObjectType type;
@@ -98,5 +103,10 @@ public class RecommendProductType {
                     } ).build();
         }
         return listQueryField;
+    }
+    
+    @Autowired(required = true)
+    public void setProductMapper(ProductMapper productMapper) {
+        RecommendProductType.productMapper = productMapper;
     }
 }

@@ -31,11 +31,6 @@
 		</property>
 	</bean>
 
-	<bean id="multipartResolver"
-		  class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-		<property name="defaultEncoding" value="UTF-8"/>
-	</bean>
-
 	<!-- 启用注解配置 -->
 	<mvc:annotation-driven>
 		<!-- 解决@ReponseBody中文乱码问题 -->
@@ -60,7 +55,4 @@
 
 	<context:annotation-config />
 
-	<!-- 开启这个配置，spring才能识别@Scheduled注解 -->
-    <task:annotation-driven scheduler="myScheduler"/>
-    <task:scheduler id="myScheduler" pool-size="10"/>
 </beans>
