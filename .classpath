@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="product"/>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/test/java"/>
+	<classpathentry kind="src" path="resources"/>
+	<classpathentry excluding="main/java/|test/java/|main/webapp/|main/webapp/swagger/|main/webapp/WEB-INF/" kind="src" path="src"/>
+	<classpathentry excluding="WEB-INF/|swagger/|WEB-INF/" kind="src" path="src/main/webapp"/>
+	<classpathentry kind="src" path="src/main/webapp/swagger"/>
+	<classpathentry kind="src" path="src/main/webapp/WEB-INF"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.buildship.core.gradleclasspathcontainer"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8/"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
