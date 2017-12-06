@@ -97,7 +97,8 @@ public class RecommendProductType {
                     .type(new GraphQLList(getType()))
                     .dataFetcher(environment ->  {
                         ProductExample example = new ProductExample();
-                        example.setOrderByClause("weight asc");
+                        example.createCriteria().andIsPublishedEqualTo(true);
+                        example.setOrderByClause("weight desc");
                         List<Product> list = productMapper.selectByExample(example);
                         return list;
                     } ).build();
