@@ -70,6 +70,11 @@ public class RecommendProductType {
                             .description("贷款上限")
                             .type(Scalars.GraphQLInt)
                             .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("creditAuth")
+                            .description("信用资质")
+                            .type(Scalars.GraphQLInt)
+                            .build())
                     .build();
         }
         return type;

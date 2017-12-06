@@ -30,15 +30,26 @@
 
     <table schema="panda_loan" tableName="category" domainObjectName ="Category" >
       <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
     </table>
         
     <table schema="panda_loan" tableName="product" domainObjectName ="Product" >
       <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
     </table>
     
     <table schema="panda_loan" tableName="user" domainObjectName ="User" >
       <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
     </table>
 
+    <table schema="panda_loan" tableName="device_log" domainObjectName ="DeviceLog" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
   </context>
 </generatorConfiguration>

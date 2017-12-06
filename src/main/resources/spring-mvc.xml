@@ -54,5 +54,15 @@
 	</mvc:cors>
 
 	<context:annotation-config />
+	
+	<!-- 拦截器 -->
+    <!-- 配置拦截器 -->
+     <mvc:interceptors>
+    <!-- 定义在mvc:interceptor下面的表示是对特定的请求才进行拦截的 -->
+        <mvc:interceptor>
+            <mvc:mapping path="/graphql/**"/>
+            <bean class="com.pinganzhiyuan.interceptor.DeviceInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors> 
 
 </beans>
