@@ -61,14 +61,14 @@ public class RecommendProductType {
                             .type(Scalars.GraphQLString)
                             .build())
                     .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("property")
-                            .description("属性")
-                            .type(Scalars.GraphQLString)
+                            .newFieldDefinition().name("floor")
+                            .description("贷款下限")
+                            .type(Scalars.GraphQLInt)
                             .build())
                     .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("edu")
-                            .description("额度")
-                            .type(Scalars.GraphQLString)
+                            .newFieldDefinition().name("ceiling")
+                            .description("贷款上限")
+                            .type(Scalars.GraphQLInt)
                             .build())
                     .build();
         }
