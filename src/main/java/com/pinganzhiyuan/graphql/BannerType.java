@@ -49,6 +49,11 @@ public class BannerType {
                             .description("成功率")
                             .type(Scalars.GraphQLString)
                             .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("slideNews")
+                            .description("轮播新闻")
+                            .type(Scalars.GraphQLString)
+                            .build())
                     .build();
         }
         return type;
