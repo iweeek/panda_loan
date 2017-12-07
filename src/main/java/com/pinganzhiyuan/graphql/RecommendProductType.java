@@ -97,7 +97,7 @@ public class RecommendProductType {
     public static GraphQLFieldDefinition getListQueryField() {
         if(listQueryField == null) {
             listQueryField = GraphQLFieldDefinition.newFieldDefinition()
-                    .name("RecommendProducts")
+                    .name("recommendProducts")
                     .description("获取产品列表")
                     .type(new GraphQLList(getType()))
                     .dataFetcher(environment ->  {

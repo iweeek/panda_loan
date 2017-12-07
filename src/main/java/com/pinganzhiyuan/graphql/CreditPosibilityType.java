@@ -19,7 +19,7 @@ import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLObjectType;
 
 @Component
-public class CreditAuthType {
+public class CreditPosibilityType {
     
     private static GraphQLFieldDefinition singleQueryField;
     private static GraphQLFieldDefinition listQueryField;
@@ -80,6 +80,6 @@ public class CreditAuthType {
     
     @Autowired(required = true)
     public void setProductMapper(CreditAuthMapper creditAuthMapper) {
-        CreditAuthType.creditAuthMapper = creditAuthMapper;
+        CreditPosibilityType.creditAuthMapper = creditAuthMapper;
     }
 }
