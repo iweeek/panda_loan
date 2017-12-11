@@ -5,12 +5,9 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.pinganzhiyuan.graphql.BannerType;
-import com.pinganzhiyuan.graphql.CategoryType;
-import com.pinganzhiyuan.graphql.ClientType;
 import com.pinganzhiyuan.graphql.CreditAuthType;
 import com.pinganzhiyuan.graphql.NavType;
 import com.pinganzhiyuan.graphql.RecommendProductType;
-import com.pinganzhiyuan.graphql.UserType;
 import com.pinganzhiyuan.model.CreditAuth;
 import com.pinganzhiyuan.service.GraphQLService;
 
@@ -39,10 +36,6 @@ public class GraphQLServiceImpl implements GraphQLService {
                 .field(CreditAuthType.getListQueryField())
                 .field(BannerType.getSingleQueryField())
                 .field(NavType.getListQueryField())
-                .field(CategoryType.getListQueryField())
-                .field(UserType.getSingleQueryField())
-                .field(ClientType.getSingleQueryField())
-//                .field(CategoryType.getSingleQueryField())
                 .build();
 		
 		GraphQLSchema schema = GraphQLSchema.newSchema()
@@ -50,8 +43,6 @@ public class GraphQLServiceImpl implements GraphQLService {
                 .build();
 		
 		graphQL = GraphQL.newGraphQL(schema).build();
-		// 手动输出
-//		Map<String, Object> result = graphQL.execute("").getData();
 	}
 	
 
