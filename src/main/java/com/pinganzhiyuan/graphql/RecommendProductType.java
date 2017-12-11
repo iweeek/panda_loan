@@ -41,7 +41,7 @@ public class RecommendProductType {
                             .type(Scalars.GraphQLString)
                             .build())
                     .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("subTitle")
+                            .newFieldDefinition().name("subtitle")
                             .description("副标题")
                             .type(Scalars.GraphQLString)
                             .build())
@@ -61,69 +61,19 @@ public class RecommendProductType {
                             .type(Scalars.GraphQLString)
                             .build())
                     .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("loanFloor")
-                            .description("贷款金额下限")
+                            .newFieldDefinition().name("floor")
+                            .description("贷款下限")
                             .type(Scalars.GraphQLInt)
                             .build())
                     .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("loanCeiling")
-                            .description("贷款金额上限")
-                            .type(Scalars.GraphQLInt)
-                            .build())
-                    .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("durationFloor")
-                            .description("贷款期限下限")
-                            .type(Scalars.GraphQLInt)
-                            .build())
-                    .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("durationCeiling")
-                            .description("贷款期限上限")
-                            .type(Scalars.GraphQLInt)
-                            .build())
-                    .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("interestFloor")
-                            .description("利率下限")
-                            .type(Scalars.GraphQLInt)
-                            .build())
-                    .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("interestCeiling")
-                            .description("利率上限")
+                            .newFieldDefinition().name("ceiling")
+                            .description("贷款上限")
                             .type(Scalars.GraphQLInt)
                             .build())
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("creditAuth")
                             .description("信用资质")
                             .type(Scalars.GraphQLInt)
-                            .build())
-                    .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("lenderName")
-                            .description("出借人姓名")
-                            .type(Scalars.GraphQLString)
-                            .build())
-                    .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("lenderDesc")
-                            .description("出借人描述")
-                            .type(Scalars.GraphQLString)
-                            .build())
-                    .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("activeCaptchaUrl")
-                            .description("资方landing page页面中的获取验证码的地址")
-                            .type(Scalars.GraphQLString)
-                            .build())
-                    .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("regInterfaceUrl")
-                            .description("指资方landing page页面中的注册的链接")
-                            .type(Scalars.GraphQLString)
-                            .build())
-                    .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("publishTime")
-//                            .description("")
-                            .type(Scalars.GraphQLString)
-                            .build())
-                    .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("unpublishTime")
-//                            .description("")
-                            .type(Scalars.GraphQLString)
                             .build())
                     .build();
         }
