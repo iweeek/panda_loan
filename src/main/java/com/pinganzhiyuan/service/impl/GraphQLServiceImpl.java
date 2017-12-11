@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.pinganzhiyuan.graphql.BannerNewsType;
 import com.pinganzhiyuan.graphql.BannerType;
 import com.pinganzhiyuan.graphql.CreditAuthType;
 import com.pinganzhiyuan.graphql.MidNavType;
@@ -38,6 +39,7 @@ public class GraphQLServiceImpl implements GraphQLService {
                 .field(BannerType.getSingleQueryField())
                 .field(TopNavType.getListQueryField())
                 .field(MidNavType.getListQueryField())
+                .field(BannerNewsType.getListQueryField())
                 .build();
 		
 		GraphQLSchema schema = GraphQLSchema.newSchema()

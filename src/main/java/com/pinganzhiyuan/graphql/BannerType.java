@@ -1,20 +1,11 @@
 package com.pinganzhiyuan.graphql;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pinganzhiyuan.mapper.BannerMapper;
-import com.pinganzhiyuan.mapper.CreditAuthMapper;
-import com.pinganzhiyuan.mapper.ProductMapper;
-import com.pinganzhiyuan.model.CreditAuth;
-import com.pinganzhiyuan.model.CreditAuthExample;
-import com.pinganzhiyuan.model.Product;
-import com.pinganzhiyuan.model.ProductExample;
-
+import com.pinganzhiyuan.mapper.BannerNewsMapper;
 import graphql.Scalars;
-import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLObjectType;
@@ -26,6 +17,8 @@ public class BannerType {
     private static GraphQLFieldDefinition listQueryField;
     
     private static BannerMapper bannerMapper;
+    private static BannerNewsMapper bannerNewsMapper;
+    
 
     private static GraphQLObjectType type;
    
@@ -45,13 +38,13 @@ public class BannerType {
                             .type(Scalars.GraphQLInt)
                             .build())
                     .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("rate")
+                            .newFieldDefinition().name("passRate")
                             .description("成功率")
                             .type(Scalars.GraphQLString)
                             .build())
                     .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("slideNews")
-                            .description("轮播新闻")
+                            .newFieldDefinition().name("unit")
+                            .description("单位")
                             .type(Scalars.GraphQLString)
                             .build())
                     .build();
@@ -67,7 +60,7 @@ public class BannerType {
                     .description("banner")
                     .type(getType())
                     .dataFetcher(environment -> {
-                        return bannerMapper.selectByExample(null);
+                        return bannerMapper.selectByExample(null).get(0);
                     }).build();
         }
         return singleQueryField;
@@ -90,7 +83,12 @@ public class BannerType {
 //    }
     
     @Autowired(required = true)
-    public void setProductMapper(BannerMapper bannerMapper) {
+    public void setBannerMapper(BannerMapper bannerMapper) {
         BannerType.bannerMapper = bannerMapper;
+    }
+    
+    @Autowired(required = true)
+    public void setBannerNewsMapper(BannerNewsMapper bannerNewsMapper) {
+        BannerType.bannerNewsMapper = bannerNewsMapper;
     }
 }
