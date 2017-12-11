@@ -93,6 +93,24 @@
       <generatedKey column="id" sqlStatement="MySql" identity="true" />
       <ignoreColumn column="created_at"/>
       <ignoreColumn column="updated_at"/>
-    </table>            
+    </table>   
+    
+    <table schema="panda_loan" tableName="guarantee" domainObjectName ="Guarantee" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>  
+    
+    <table schema="panda_loan" tableName="product_type" domainObjectName ="ProductType" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table> 
+    
+    <table schema="panda_loan" tableName="guarantee_type_mapping" domainObjectName ="GuaranteeTypeMapping" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>                           
   </context>
 </generatorConfiguration>

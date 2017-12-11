@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.pinganzhiyuan.graphql.BannerNewsType;
 import com.pinganzhiyuan.graphql.BannerType;
 import com.pinganzhiyuan.graphql.CreditAuthType;
+import com.pinganzhiyuan.graphql.GuaranteeType;
 import com.pinganzhiyuan.graphql.MidAdType;
 import com.pinganzhiyuan.graphql.MidNavType;
 import com.pinganzhiyuan.graphql.TopNavType;
@@ -42,6 +43,7 @@ public class GraphQLServiceImpl implements GraphQLService {
                 .field(MidNavType.getListQueryField())
                 .field(BannerNewsType.getListQueryField())
                 .field(MidAdType.getListQueryField())
+                .field(GuaranteeType.getListQueryField())
                 .build();
 		
 		GraphQLSchema schema = GraphQLSchema.newSchema()
