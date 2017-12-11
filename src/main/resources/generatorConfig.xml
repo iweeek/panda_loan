@@ -71,10 +71,22 @@
       <ignoreColumn column="updated_at"/>
     </table>
     
-    <table schema="panda_loan" tableName="nav" domainObjectName ="Nav" >
+    <table schema="panda_loan" tableName="top_nav" domainObjectName ="TopNav" >
       <generatedKey column="id" sqlStatement="MySql" identity="true" />
       <ignoreColumn column="created_at"/>
       <ignoreColumn column="updated_at"/>
-    </table>           
+    </table>     
+    
+    <table schema="panda_loan" tableName="mid_nav" domainObjectName ="MidNav" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>  
+    
+    <table schema="panda_loan" tableName="mid_ad" domainObjectName ="MidAd" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>                 
   </context>
 </generatorConfiguration>

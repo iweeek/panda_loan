@@ -64,5 +64,5 @@
             <bean class="com.pinganzhiyuan.interceptor.DeviceInterceptor"></bean>
         </mvc:interceptor>
     </mvc:interceptors> 
-
+    
 </beans>

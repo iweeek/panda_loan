@@ -33,7 +33,7 @@ public class BannerType {
     public static GraphQLObjectType getType() {
         if (type == null) {
             type = GraphQLObjectType
-                    .newObject().name("Baner").description("Banner")
+                    .newObject().name("Banner").description("Banner")
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("id")
                             .description("唯一主键")
