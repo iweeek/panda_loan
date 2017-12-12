@@ -36,27 +36,22 @@ public class TokenController {
     @SuppressWarnings("rawtypes")
     @ApiOperation(value = "创建token", notes = "验证用户名与密码，为用户创建一个用于鉴权的Token")
     @RequestMapping(value = { "/tokens" }, method = RequestMethod.POST)
-    public ResponseEntity<?> create(@ApiParam("用户名") @RequestParam String username,
-            @ApiParam("密码") @RequestParam String password, @ApiParam("盐值") @RequestParam String salt,
-            @ApiParam("有效时间(单位:小时)，不填则默认为1") @RequestParam(required = false, defaultValue = "1") Integer expiredHour,
-            HttpServletRequest request, HttpSession httpSession, @RequestParam String key) {
-        Captcha captcha = new Captcha();
-        Boolean isPassed = captchaService.verifyCaptchaIsPassed(request, captcha, key);
+    public ResponseEntity<?> create(@ApiParam("用户名（电话号码）") @RequestParam String username, @ApiParam("图形验证码的key")@RequestParam(required = false) String keyImageCapt,
+            @ApiParam("图形验证码")@RequestParam(required = false) String imageCapt, @ApiParam("短信验证码的key")@RequestParam String keySMSCapt,
+            @ApiParam("短信验证码")@RequestParam String smsCapt) {
+        
+        Boolean isPassed = false;
+        
+        isPassed = captchaService.verifyCaptcha(smsCapt, keySMSCapt);
+        
+        if (imageCapt != null && keyImageCapt != null) { 
+            isPassed = captchaService.verifyCaptcha(imageCapt, keyImageCapt);
+        }
+        
         if (isPassed) {
-            ResponseBody body = new ResponseBody();
-            int status = tokenService.create(username, password, salt, expiredHour, body, httpSession);
-            if (status == 0) {
-                // 删除本次的验证码
-                if (captcha != null) {
-                    captchaMapper.deleteByPrimaryKey(captcha.getId());
-                }
-                return ResponseEntity.status(HttpServletResponse.SC_OK).body(body);
-            } else {
-//                return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND).body(isPassed);
-                return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND).body(null);
-            }
+            return ResponseEntity.status(HttpServletResponse.SC_OK).body(null);
         } else {
-            return ResponseEntity.status(HttpServletResponse.SC_OK).body(isPassed);
+            return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(null);
         }
     }
 }

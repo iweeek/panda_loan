@@ -94,9 +94,12 @@ public class RecommendProductType {
 //        return singleQueryField;
 //    }
     
-    public static GraphQLFieldDefinition getListQueryField() {
+    public static GraphQLFieldDefinition getSearchListField() {
         if(listQueryField == null) {
             listQueryField = GraphQLFieldDefinition.newFieldDefinition()
+                    .argument(GraphQLArgument.newArgument().name("money").type(Scalars.GraphQLLong).build())
+                    .argument(GraphQLArgument.newArgument().name("duration").type(Scalars.GraphQLLong).build())
+                    .argument(GraphQLArgument.newArgument().name("order").type(Scalars.GraphQLString).build())
                     .name("recommendProducts")
                     .description("获取产品列表")
                     .type(new GraphQLList(getType()))

@@ -61,7 +61,7 @@ public class BannerNewsType {
     public static GraphQLFieldDefinition getListQueryField() {
         if(listQueryField == null) {
             listQueryField = GraphQLFieldDefinition.newFieldDefinition()
-                    .name("banerNewsList")
+                    .name("bannerNewsList")
                     .description("横幅新闻列表")
                     .type(new GraphQLList(getType()))
                     .dataFetcher(environment ->  {

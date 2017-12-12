@@ -36,7 +36,7 @@ public class GraphQLServiceImpl implements GraphQLService {
 		//创建GraphQL实例
 		GraphQLObjectType queryType = GraphQLObjectType.newObject()
                 .name("root")
-                .field(RecommendProductType.getListQueryField())
+                .field(RecommendProductType.getSearchListField())
                 .field(CreditAuthType.getListQueryField())
                 .field(BannerType.getSingleQueryField())
                 .field(TopNavType.getListQueryField())

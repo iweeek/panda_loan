@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.pinganzhiyuan.model.Captcha;
+import com.pinganzhiyuan.model.SMSLog;
 
 
 
@@ -16,15 +17,13 @@ public interface CaptchaService {
      * @param response
      * @return
      */
-    BufferedImage genCaptcha(HttpServletResponse response);
+    Captcha genCaptcha(int tag, String phone);
     
     /** 
      * 检查验证码是否正确，并把结果写入数据库中 
      */ 
-    Boolean verifyCaptcha(HttpServletRequest request, String captcha, String key);
-    /** 
-     * 判断验证码是否已经通过
-     */ 
-    Boolean verifyCaptchaIsPassed(HttpServletRequest request, Captcha captcha, String key);
+    Boolean verifyCaptcha(String captcha, String key);
+    
+    SMSLog getLastSMSByPhone(String phone);
     
 }
