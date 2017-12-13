@@ -3,6 +3,8 @@ package com.pinganzhiyuan.controller;
 import java.awt.image.BufferedImage;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
@@ -36,7 +38,7 @@ public class SMSCaptchaController {
     private CaptchaService captchaService;
     
     @Autowired
-    private SMSLogMapper smsLogSMapper;
+    private SMSLogMapper smsLogMapper;
     
     @ApiOperation(value = "创建验证码", notes = "创建验证码，将创建好的验证码存入数据库中")
     @RequestMapping(value = { "/smsCaptcha" }, method = RequestMethod.POST)
@@ -44,8 +46,11 @@ public class SMSCaptchaController {
         
         SMSLog log = new SMSLog();
         SMSLog lastLog = captchaService.getLastSMSByPhone(phone);
-        if (lastLog != null && (new Date().getTime() - lastLog.getSendTime().getTime() < 90)) {
-            ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(null);  
+        //90秒内同一手机不能请求第二次
+        if (lastLog != null) {
+            if (new Date().getTime() - lastLog.getSendTime().getTime() < 90) {
+                ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(null);  
+            }
         }
         
         //将该手机之前申请的未使用过的验证码标记为已使用
@@ -68,22 +73,25 @@ public class SMSCaptchaController {
             object.put("phone", phone);
             object.put("uid", captcha.getId());
             
-            Boolean result = SMSUtil.sendSMS(object.toString());
+            Boolean result = true;
+            //result = SMSUtil.sendSMS(object.toString());
             
-            if (result) {
+            if (result) {   
                 log = new SMSLog();
                 log.setMessage(object.toString());
                 log.setPhone(phone);
-                smsLogSMapper.insert(log);
+                log.setSendTime(new Date());
+                log.setChannelId((byte) 0);
+                smsLogMapper.insert(log);
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         
-        JSONObject obj = new JSONObject();
-        obj.put("keySMSCapt", log.getId());
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("keySMSCapt", String.valueOf(log.getId()));
         
-        return ResponseEntity.status(HttpServletResponse.SC_OK).body(obj); 
+        return ResponseEntity.status(HttpServletResponse.SC_OK).body(map); 
 
     }
 

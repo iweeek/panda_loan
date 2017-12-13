@@ -83,10 +83,7 @@ public class CaptchaServiceImpl implements CaptchaService {
 
     @Override
     public int obsoleteSMSsByPhone(String phone) {
-        
-        return smsLogMapper.obsoleteSMSsByPhone(phone);
-        
-        
+        return captchaMapper.obsoleteSMSsByPhone(phone);
     }
 
 }

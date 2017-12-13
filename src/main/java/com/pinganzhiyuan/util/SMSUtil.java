@@ -12,6 +12,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.json.JSONObject;
 
+import com.pinganzhiyuan.model.SMSLog;
+
 public class SMSUtil {
     
     public static Boolean sendSMS(String str) throws UnsupportedEncodingException {  
