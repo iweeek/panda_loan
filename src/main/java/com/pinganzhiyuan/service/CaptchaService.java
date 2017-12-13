@@ -1,14 +1,7 @@
 package com.pinganzhiyuan.service;
 
-import java.awt.image.BufferedImage;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.pinganzhiyuan.model.Captcha;
 import com.pinganzhiyuan.model.SMSLog;
-
-
 
 public interface CaptchaService {
 
@@ -25,5 +18,7 @@ public interface CaptchaService {
     Boolean verifyCaptcha(String captcha, String key);
     
     SMSLog getLastSMSByPhone(String phone);
+
+    int obsoleteSMSsByPhone(String phone);
     
 }

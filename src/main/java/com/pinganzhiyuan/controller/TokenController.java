@@ -33,7 +33,6 @@ public class TokenController {
     @Autowired
     CaptchaMapper captchaMapper;
     
-    @SuppressWarnings("rawtypes")
     @ApiOperation(value = "创建token", notes = "验证用户名与密码，为用户创建一个用于鉴权的Token")
     @RequestMapping(value = { "/tokens" }, method = RequestMethod.POST)
     public ResponseEntity<?> create(@ApiParam("用户名（电话号码）") @RequestParam String username, @ApiParam("图形验证码的key")@RequestParam(required = false) String keyImageCapt,

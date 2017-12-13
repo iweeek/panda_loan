@@ -38,6 +38,7 @@ public class CaptchaServiceImpl implements CaptchaService {
         captcha.setCaptcha(strCaptcha);
         captcha.setPhone(phone);
         captcha.setAppliedTime(new Date());
+        captcha.setIsExpired(false);
 
         captchaMapper.insert(captcha);
         
@@ -50,7 +51,7 @@ public class CaptchaServiceImpl implements CaptchaService {
         if (!StringUtils.isEmpty(captcha)) {
             // 从数据库里取出cookie判断是否匹配
             CaptchaExample example = new CaptchaExample();
-            example.createCriteria().andIdEqualTo(Long.valueOf(key));
+            example.createCriteria().andIdEqualTo(Long.valueOf(key)).andIsExpiredEqualTo(false);
             List<Captcha> list = captchaMapper.selectByExample(example);
             if (list.size() > 0) {
                 Captcha capt = list.get(0);
@@ -78,6 +79,14 @@ public class CaptchaServiceImpl implements CaptchaService {
             return list.get(0);
         }
         return null;
+    }
+
+    @Override
+    public int obsoleteSMSsByPhone(String phone) {
+        
+        return smsLogMapper.obsoleteSMSsByPhone(phone);
+        
+        
     }
 
 }

@@ -48,6 +48,9 @@ public class SMSCaptchaController {
             ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(null);  
         }
         
+        //将该手机之前申请的未使用过的验证码标记为已使用
+        captchaService.obsoleteSMSsByPhone(phone);
+        
         Captcha captcha = captchaService.genCaptcha(2, phone);
         
         JSONObject object = new JSONObject();
