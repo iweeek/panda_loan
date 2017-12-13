@@ -54,9 +54,9 @@ public class SMSCaptchaController {
         }
         
         //将该手机之前申请的未使用过的验证码标记为已使用
-        captchaService.obsoleteSMSsByPhone(phone);
+        captchaService.obsoleteCaptchaByPhone(phone);
         
-        Captcha captcha = captchaService.genCaptcha(2, phone);
+        Captcha captcha = captchaService.genCaptcha(2);
         
         JSONObject object = new JSONObject();
         object.put("account", "N2500774");
@@ -74,7 +74,7 @@ public class SMSCaptchaController {
             object.put("uid", captcha.getId());
             
             Boolean result = true;
-            //result = SMSUtil.sendSMS(object.toString());
+            result = SMSUtil.sendSMS(object.toString());
             
             if (result) {   
                 log = new SMSLog();
@@ -82,6 +82,7 @@ public class SMSCaptchaController {
                 log.setPhone(phone);
                 log.setSendTime(new Date());
                 log.setChannelId((byte) 0);
+                log.setCaptId(captcha.getId());
                 smsLogMapper.insert(log);
             }
         } catch (UnsupportedEncodingException e) {

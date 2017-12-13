@@ -4,11 +4,9 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,17 +27,19 @@ public class ImageCaptchaController {
 
     @ApiOperation(value = "创建验证码", notes = "创建验证码，将创建好的验证码存入数据库中")
     @RequestMapping(value = { "/imageCaptchas" }, method = RequestMethod.POST)
-    public void create(@ApiParam("电话号码") @RequestParam String phone, HttpServletResponse response) {
+    public void create(HttpServletResponse response) {
         try {
             // 把校验码转为图像
-            Captcha captcha = captchaService.genCaptcha(1, phone);
+            Captcha captcha = captchaService.genCaptcha(1);
             BufferedImage image = CaptchaUtil.genCaptchaImg(captcha.getCaptcha());
 
             response.setContentType("image/jpeg");
+            response.addHeader("keyImageCapt", String.valueOf(captcha.getId()));
             System.out.println(response);
             // 输出图像
             ServletOutputStream outStream = response.getOutputStream();
             ImageIO.write(image, "jpeg", outStream);
+            
             response.flushBuffer();
             outStream.close();
         } catch (Exception ex) {

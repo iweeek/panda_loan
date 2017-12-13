@@ -1,5 +1,7 @@
 package com.pinganzhiyuan.controller;
 
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -12,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pinganzhiyuan.mapper.CaptchaMapper;
+import com.pinganzhiyuan.mapper.UserMapper;
 import com.pinganzhiyuan.model.Captcha;
+import com.pinganzhiyuan.model.User;
 import com.pinganzhiyuan.service.CaptchaService;
 import com.pinganzhiyuan.service.TokenService;
 import com.pinganzhiyuan.util.ResponseBody;
@@ -33,6 +37,9 @@ public class TokenController {
     @Autowired
     CaptchaMapper captchaMapper;
     
+    @Autowired
+    UserMapper userMapper;
+    
     @ApiOperation(value = "创建token", notes = "验证用户名与密码，为用户创建一个用于鉴权的Token")
     @RequestMapping(value = { "/tokens" }, method = RequestMethod.POST)
     public ResponseEntity<?> create(@ApiParam("用户名（电话号码）") @RequestParam String username, @ApiParam("图形验证码的key")@RequestParam(required = false) String keyImageCapt,
@@ -47,8 +54,16 @@ public class TokenController {
             isPassed = captchaService.verifyCaptcha(imageCapt, keyImageCapt);
         }
         
+        User user = new User();
+        user.setPassword("");
+        user.setRegistTime((new Date()).getTime());
+        user.setUsername(username);
+        userMapper.insert(user);
+        
+        user.setPassword("");
+        
         if (isPassed) {
-            return ResponseEntity.status(HttpServletResponse.SC_OK).body(null);
+            return ResponseEntity.status(HttpServletResponse.SC_OK).body(user);
         } else {
             return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(null);
         }

@@ -25,7 +25,7 @@ public class CaptchaServiceImpl implements CaptchaService {
     SMSLogMapper smsLogMapper;
 
     @Override
-    public Captcha genCaptcha(int tag, String phone) {
+    public Captcha genCaptcha(int tag) {
         // 生成一个校验码
         String strCaptcha;
         if (tag == 1) {
@@ -36,7 +36,6 @@ public class CaptchaServiceImpl implements CaptchaService {
         
         Captcha captcha = new Captcha();
         captcha.setCaptcha(strCaptcha);
-        captcha.setPhone(phone);
         captcha.setAppliedTime(new Date());
         captcha.setIsExpired(false);
 
@@ -82,7 +81,7 @@ public class CaptchaServiceImpl implements CaptchaService {
     }
 
     @Override
-    public int obsoleteSMSsByPhone(String phone) {
+    public int obsoleteCaptchaByPhone(String phone) {
         return captchaMapper.obsoleteSMSsByPhone(phone);
     }
 

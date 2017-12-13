@@ -10,7 +10,7 @@ public interface CaptchaService {
      * @param response
      * @return
      */
-    Captcha genCaptcha(int tag, String phone);
+    Captcha genCaptcha(int tag);
     
     /** 
      * 检查验证码是否正确，并把结果写入数据库中 
@@ -19,6 +19,6 @@ public interface CaptchaService {
     
     SMSLog getLastSMSByPhone(String phone);
 
-    int obsoleteSMSsByPhone(String phone);
+    int obsoleteCaptchaByPhone(String phone);
     
 }
