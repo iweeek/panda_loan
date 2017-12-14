@@ -26,6 +26,7 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
 	        String version = request.getHeader("Version");
 	        String userId = request.getHeader("User-Id");
 	        String userAgent = request.getHeader("User-Agent");
+	        String channelId = request.getHeader("Channel-Id");
 	        String ip = request.getRemoteAddr();
 	       
 	        String uri = request.getRequestURI();
@@ -35,10 +36,10 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
 	        
 	        DeviceLog deviceLog = new DeviceLog();
 	        deviceLog.setVersion(Integer.valueOf(userId));
+	        deviceLog.setChannelId(Long.valueOf(channelId));
 	        deviceLog.setUserId(Long.valueOf(userId));
 	        deviceLog.setUserAgent(userAgent);
 	        deviceLog.setIp(ip);
-	        
 	        deviceLog.setUri(uri);
 	        
 	        deviceLogMapper.insert(deviceLog);
