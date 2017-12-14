@@ -69,7 +69,7 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
         deviceLog.setPageId(pageId);
 
         deviceLogMapper.insert(deviceLog);
-
+        
         return super.preHandle(request, response, handler);
     }
 

@@ -13,7 +13,7 @@ import com.pinganzhiyuan.graphql.MidAdType;
 import com.pinganzhiyuan.graphql.MidNavType;
 import com.pinganzhiyuan.graphql.TopNavType;
 import com.pinganzhiyuan.graphql.RecommendProductType;
-import com.pinganzhiyuan.model.CreditAuth;
+import com.pinganzhiyuan.graphql.SelectOrderType;
 import com.pinganzhiyuan.service.GraphQLService;
 
 import graphql.ExecutionResult;
@@ -46,6 +46,7 @@ public class GraphQLServiceImpl implements GraphQLService {
                 .field(MidAdType.getListQueryField())
                 .field(GuaranteeType.getListQueryField())
                 .field(LoanSpanType.getListQueryField())
+                .field(SelectOrderType.getListQueryField())
                 .build();
 		
 		GraphQLSchema schema = GraphQLSchema.newSchema()

@@ -123,6 +123,12 @@
       <generatedKey column="id" sqlStatement="MySql" identity="true" />
       <ignoreColumn column="created_at"/>
       <ignoreColumn column="updated_at"/>
-    </table>                             
+    </table>  
+    
+    <table schema="panda_loan" tableName="select_order" domainObjectName ="SelectOrder" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>                                
   </context>
 </generatorConfiguration>
