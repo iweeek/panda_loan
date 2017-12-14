@@ -18,14 +18,6 @@ repositories {
     jcenter()
 }
 
-
-plugins {
-    id 'java'
-    id 'war'
-    id 'eclipse-wtp'
-    id 'org.flywaydb.flyway' version '4.2.0'
-    id "org.hidetake.ssh"    version "2.9.0"
-}
 dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api 'org.apache.commons:commons-math3:3.6.1'
@@ -57,42 +49,11 @@ dependencies {
     compile group: 'c3p0', name: 'c3p0', version: '0.9.0.4'
     compile group: 'org.json', name: 'json', version: '20160810'
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.4'
+    compile group: 'org.apache.commons', name: 'commons-io', version: '1.3.2'
 
     testCompile 'junit:junit:4.12'
     testCompile group: 'org.springframework', name: 'spring-test', version: '4.3.8.RELEASE'
 
 }
 
-task deploy(dependsOn: [war]) {
-  doLast {
-    switch (env) {
-      case 'test':
-      case 'dev':
-        println 'start deploy to ' + env
-        ssh.run {
-          session(remotes.testServer) {
-            remove '/usr/local/webserver/tomcat/webapps/wzsport-server.war'
-            put from: buildDir.toString() + '/libs/wzsport-server.war', into: '/usr/local/webserver/tomcat/webapps/'
-            execute 'export JAVA_HOME=/usr/local/jdk1.8.0_71; /usr/local/webserver/tomcat/bin/shutdown.sh'
-            execute 'export JAVA_HOME=/usr/local/jdk1.8.0_71; /usr/local/webserver/tomcat/bin/startup.sh'
-          }
-        }
-        break
-      case 'product':
-        println 'start deploy to ' + env
-        ssh.run {
-          session(remotes.productServer) {
-//          remove '/usr/local/webserver/tomcat/webapps/wzsport-server.war'
-            put from: buildDir.toString() + '/libs/wzsport-server.war', into: '/usr/local/webserver/tomcat/webapps/'
-            execute 'export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.141-1.b16.el7_3.x86_64/jre/; /usr/local/webserver/tomcat/bin/shutdown.sh'
-            execute 'export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.141-1.b16.el7_3.x86_64/jre/; /usr/local/webserver/tomcat/bin/startup.sh'
-          }
-        }
-        break
-      default:
-        println 'env: ' + env
-        throw new RuntimeException("环境变量应该设置为test、dev或者product")
-    }
-  }
-}
 
