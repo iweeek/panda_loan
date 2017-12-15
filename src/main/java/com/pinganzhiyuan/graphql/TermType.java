@@ -5,9 +5,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pinganzhiyuan.mapper.LoanSpanMapper;
-import com.pinganzhiyuan.model.LoanSpan;
-import com.pinganzhiyuan.model.LoanSpanExample;
+import com.pinganzhiyuan.mapper.LoanAmountRangeMapper;
+import com.pinganzhiyuan.mapper.TermMapper;
+import com.pinganzhiyuan.model.LoanAmountRange;
+import com.pinganzhiyuan.model.LoanAmountRangeExample;
+import com.pinganzhiyuan.model.Term;
+import com.pinganzhiyuan.model.TermExample;
 
 import graphql.Scalars;
 import graphql.schema.GraphQLFieldDefinition;
@@ -15,32 +18,27 @@ import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLObjectType;
 
 @Component
-public class LoanSpanType {
+public class TermType {
     
     private static GraphQLFieldDefinition singleQueryField;
     private static GraphQLFieldDefinition listQueryField;
     
-    private static LoanSpanMapper loanSpanMapper;
+    private static TermMapper termMapper;
 
     private static GraphQLObjectType type;
 
     public static GraphQLObjectType getType() {
         if (type == null) {
             type = GraphQLObjectType
-                    .newObject().name("LoanSpan").description("贷款区间")
+                    .newObject().name("Term").description("贷款期限")
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("id")
                             .description("唯一主键")
                             .type(Scalars.GraphQLLong)
                             .build())
                     .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("loanCeiling")
-                            .description("贷款下限")
-                            .type(Scalars.GraphQLInt)
-                            .build())
-                    .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("loanFloor")
-                            .description("贷款下限")
+                            .newFieldDefinition().name("duration")
+                            .description("期限")
                             .type(Scalars.GraphQLInt)
                             .build())
                     .build();
@@ -65,13 +63,13 @@ public class LoanSpanType {
     public static GraphQLFieldDefinition getListQueryField() {
         if(listQueryField == null) {
             listQueryField = GraphQLFieldDefinition.newFieldDefinition()
-                    .name("loanSpans")
-                    .description("贷款区间列表")
+                    .name("terms")
+                    .description("贷款期限列表")
                     .type(new GraphQLList(getType()))
                     .dataFetcher(environment ->  {
-                        LoanSpanExample example = new LoanSpanExample();
+                        TermExample example = new TermExample();
                         example.setOrderByClause("sequency asc");
-                        List<LoanSpan> list = loanSpanMapper.selectByExample(example);
+                        List<Term> list = termMapper.selectByExample(example);
                         return list;
                     } ).build();
         }
@@ -79,7 +77,7 @@ public class LoanSpanType {
     }
     
     @Autowired(required = true)
-    public void setLoanSpanMapper(LoanSpanMapper loanSpanMapper) {
-        LoanSpanType.loanSpanMapper = loanSpanMapper;
+    public void setTermMapper(TermMapper termMapper) {
+        TermType.termMapper = termMapper;
     }
 }

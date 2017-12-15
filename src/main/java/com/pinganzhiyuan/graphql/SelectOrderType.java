@@ -5,10 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pinganzhiyuan.mapper.LoanSpanMapper;
 import com.pinganzhiyuan.mapper.SelectOrderMapper;
-import com.pinganzhiyuan.model.LoanSpan;
-import com.pinganzhiyuan.model.LoanSpanExample;
 import com.pinganzhiyuan.model.SelectOrder;
 import com.pinganzhiyuan.model.SelectOrderExample;
 

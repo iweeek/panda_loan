@@ -38,7 +38,7 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
         String ip = request.getRemoteAddr();
         String uri = request.getRequestURI();
 
-        if (version == null || userId == null || channelId == null || userAgent == null || deviceId != null) {
+        if (version == null || userId == null || channelId == null || userAgent == null || deviceId == null) {
             return false;
         }
 

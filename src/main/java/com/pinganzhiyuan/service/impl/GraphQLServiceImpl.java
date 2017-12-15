@@ -8,12 +8,13 @@ import com.pinganzhiyuan.graphql.BannerNewsType;
 import com.pinganzhiyuan.graphql.BannerType;
 import com.pinganzhiyuan.graphql.CreditAuthType;
 import com.pinganzhiyuan.graphql.GuaranteeType;
-import com.pinganzhiyuan.graphql.LoanSpanType;
+import com.pinganzhiyuan.graphql.LoanAmountRangeType;
 import com.pinganzhiyuan.graphql.MidAdType;
 import com.pinganzhiyuan.graphql.MidNavType;
 import com.pinganzhiyuan.graphql.TopNavType;
 import com.pinganzhiyuan.graphql.RecommendProductType;
 import com.pinganzhiyuan.graphql.SelectOrderType;
+import com.pinganzhiyuan.graphql.TermType;
 import com.pinganzhiyuan.service.GraphQLService;
 
 import graphql.ExecutionResult;
@@ -45,8 +46,9 @@ public class GraphQLServiceImpl implements GraphQLService {
                 .field(BannerNewsType.getListQueryField())
                 .field(MidAdType.getListQueryField())
                 .field(GuaranteeType.getListQueryField())
-                .field(LoanSpanType.getListQueryField())
+                .field(LoanAmountRangeType.getListQueryField())
                 .field(SelectOrderType.getListQueryField())
+                .field(TermType.getListQueryField())
                 .build();
 		
 		GraphQLSchema schema = GraphQLSchema.newSchema()
@@ -68,7 +70,6 @@ public class GraphQLServiceImpl implements GraphQLService {
 	/* (non-Javadoc)
 	 * @see com.wzsport.service.GraphQLService#query(java.lang.String, java.util.Map)
 	 */
-	@Override
 	public ExecutionResult query(String queryString, Map<String, Object> variables) {
 		return graphQL.execute(queryString, (Object) null, variables);
 	}
