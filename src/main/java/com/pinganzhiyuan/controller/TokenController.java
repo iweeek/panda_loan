@@ -1,6 +1,8 @@
 package com.pinganzhiyuan.controller;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,24 +50,31 @@ public class TokenController {
         
         Boolean isPassed = false;
         
-        isPassed = captchaService.verifyCaptcha(smsCapt, keySMSCapt);
+        ResponseBody<String> resBody = new ResponseBody<String>();
+        
+        String msg;
         
         if (imageCapt != null && keyImageCapt != null) { 
             isPassed = captchaService.verifyCaptcha(imageCapt, keyImageCapt);
+            if (!isPassed) {
+                resBody.statusMsg = "图形验证码不正确";
+                return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(resBody);
+            }
         }
         
-        User user = new User();
-        user.setPassword("");
-        user.setRegistTime((new Date()).getTime());
-        user.setUsername(username);
-        userMapper.insert(user);
-        
-        user.setPassword("");
-        
+        isPassed = captchaService.verifyCaptcha(smsCapt, keySMSCapt);
         if (isPassed) {
+            User user = new User();
+            user.setPassword("");
+            user.setRegistTime((new Date()).getTime());
+            user.setUsername(username);
+            userMapper.insert(user);
+            
+            user.setPassword("");
             return ResponseEntity.status(HttpServletResponse.SC_OK).body(user);
         } else {
-            return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(null);
+            resBody.statusMsg = "短信验证码不正确";
+            return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(resBody);
         }
     }
 }

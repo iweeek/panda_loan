@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pinganzhiyuan.mapper.CaptchaMapper;
 import com.pinganzhiyuan.mapper.SMSLogMapper;
@@ -48,13 +49,14 @@ public class CaptchaServiceImpl implements CaptchaService {
     @Override
     public Boolean verifyCaptcha(String captcha, String key) {
         if (!StringUtils.isEmpty(captcha)) {
-            // 从数据库里取出cookie判断是否匹配
             CaptchaExample example = new CaptchaExample();
             example.createCriteria().andIdEqualTo(Long.valueOf(key)).andIsExpiredEqualTo(false);
             List<Captcha> list = captchaMapper.selectByExample(example);
             if (list.size() > 0) {
                 Captcha capt = list.get(0);
                 if (captcha.toUpperCase().equals(capt.getCaptcha())) {
+                    capt.setIsExpired(true);
+                    captchaMapper.updateByPrimaryKey(capt);
                     return true;
                 } else {
                     return false;
