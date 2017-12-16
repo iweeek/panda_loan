@@ -35,7 +35,7 @@ public class GuaranteeType {
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("creditGuarantee")
                             .description("贷款担保")
-                            .type(Scalars.GraphQLInt)
+                            .type(Scalars.GraphQLString)
                             .build())
                     .build();
         }

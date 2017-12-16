@@ -60,6 +60,9 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
 //        }
 
         String strPageId = request.getParameter("pageId");
+        if (strPageId == null) {
+            strPageId = "0";
+        }
         int pageId = Integer.valueOf(strPageId);
         DeviceLog deviceLog = new DeviceLog();
         deviceLog.setVersion(Integer.valueOf(version));

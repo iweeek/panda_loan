@@ -9,7 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -47,13 +49,13 @@ public class ClientController {
     @Autowired
     ClientMapper clientMapper;
     
-    @ApiOperation(value = "创建token", notes = "验证用户名与密码，为用户创建一个用于鉴权的Token")
+    @ApiOperation(value = "创建客户", notes = "创建客户")
     @RequestMapping(value = { "/clients" }, method = RequestMethod.POST)
     public ResponseEntity<?> create(@ApiParam("用户Id") @RequestParam Long userId, @ApiParam("真实姓名")@RequestParam String name,
             @ApiParam("身份证号")@RequestParam String idNo, @ApiParam("居住地址")@RequestParam(required = false) String resiAddr,
             @ApiParam("性别")@RequestParam(required = false) Boolean isMan, @ApiParam("民族")@RequestParam(required = false) String nation,
-            @ApiParam("生日")@RequestParam(required = false) String birthday, @ApiParam("身份证签发机关")@RequestParam(required = false) String auth,
-            @ApiParam("身份证过期时间")@RequestParam(required = false) Date expirDate) {
+            @ApiParam("生日")@RequestParam(required = false) @DateTimeFormat(pattern="yyyyMMdd") Date birthday, @ApiParam("身份证签发机关")@RequestParam(required = false) String auth,
+            @ApiParam("身份证过期时间")@RequestParam(required = false) @DateTimeFormat(pattern="yyyyMMdd") Date expirDate, @ApiParam("学历")@RequestParam(required = false) String edu) {
         
         Client client = new Client();
         client.setUserId(userId);
@@ -83,7 +85,27 @@ public class ClientController {
             client.setIdentityExpiration(expirDate);
         }
         
+        if (edu != null) {
+            client.setEducation(edu);
+        }
+        
         int ret = clientMapper.insertSelective(client);
         return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(null); 
+    }
+    
+    @ApiOperation(value = "查询客户信息", notes = "查询客户信息")
+    @RequestMapping(value = { "/client/{id}" }, method = RequestMethod.GET)
+    public ResponseEntity<?> read(@ApiParam("客户Id") @PathVariable Long id) {
+        
+        Client client = clientMapper.selectByPrimaryKey(id);
+        @SuppressWarnings("rawtypes")
+        ResponseBody body = new ResponseBody();
+        body.statusMsg = "操作成功";
+        body.obj1 = client;
+        if (client != null) {
+            return ResponseEntity.status(HttpServletResponse.SC_OK).body(client); 
+        } else {
+            return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND).body(null); 
+        }
     }
 }
