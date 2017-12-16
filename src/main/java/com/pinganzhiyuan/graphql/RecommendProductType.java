@@ -1,13 +1,27 @@
 package com.pinganzhiyuan.graphql;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pinganzhiyuan.mapper.GuaranteeTypeMappingMapper;
+import com.pinganzhiyuan.mapper.LoanAmountRangeMapper;
 import com.pinganzhiyuan.mapper.ProductMapper;
+import com.pinganzhiyuan.mapper.ProductTypeMappingMapper;
+import com.pinganzhiyuan.mapper.SelectOrderMapper;
+import com.pinganzhiyuan.model.GuaranteeTypeMapping;
+import com.pinganzhiyuan.model.GuaranteeTypeMappingExample;
 import com.pinganzhiyuan.model.Product;
 import com.pinganzhiyuan.model.ProductExample;
+import com.pinganzhiyuan.model.ProductExample.Criteria;
+import com.pinganzhiyuan.model.ProductTypeMappingExample;
+import com.pinganzhiyuan.model.SelectOrder;
+import com.pinganzhiyuan.model.SelectOrderExample;
+import com.pinganzhiyuan.model.LoanAmountRange;
+import com.pinganzhiyuan.model.LoanAmountRangeExample;
+import com.pinganzhiyuan.model.ProductTypeMapping;
 
 import graphql.Scalars;
 import graphql.schema.GraphQLArgument;
@@ -22,6 +36,10 @@ public class RecommendProductType {
     private static GraphQLFieldDefinition listQueryField;
     
     private static ProductMapper productMapper;
+    private static GuaranteeTypeMappingMapper guaranteeTypeMappingMapper;
+    private static ProductTypeMappingMapper productTypeMappingMapper;
+    private static SelectOrderMapper selectOrderMapper;
+    private static LoanAmountRangeMapper loanAmountRangeMapper;
 
     private static GraphQLObjectType type;
    
@@ -97,16 +115,105 @@ public class RecommendProductType {
     public static GraphQLFieldDefinition getSearchListField() {
         if(listQueryField == null) {
             listQueryField = GraphQLFieldDefinition.newFieldDefinition()
-                    .argument(GraphQLArgument.newArgument().name("money").type(Scalars.GraphQLLong).build())
-                    .argument(GraphQLArgument.newArgument().name("duration").type(Scalars.GraphQLLong).build())
-                    .argument(GraphQLArgument.newArgument().name("order").type(Scalars.GraphQLString).build())
+                    .argument(GraphQLArgument.newArgument().name("guaranteeId").type(Scalars.GraphQLLong).build())
+                    .argument(GraphQLArgument.newArgument().name("loanAmountRangeId").type(Scalars.GraphQLLong).build())
+                    .argument(GraphQLArgument.newArgument().name("term").type(Scalars.GraphQLInt).build())
+                    .argument(GraphQLArgument.newArgument().name("selectOrderId").type(Scalars.GraphQLLong).build())
                     .name("recommendProducts")
                     .description("获取产品列表")
                     .type(new GraphQLList(getType()))
                     .dataFetcher(environment ->  {
+//                        String guaranteeIds = environment.getArgument("guaranteeIds");
+                        Long guaranteeId = environment.getArgument("guaranteeId");
+                        List<GuaranteeTypeMapping> guaranteeTypeMappingList = null;
+                        List<Long> productIdList = new ArrayList<Long>();
+                        if (guaranteeId != null) {
+                            GuaranteeTypeMappingExample gExample = new GuaranteeTypeMappingExample();
+                            gExample.or().andGuaranteeIdEqualTo(guaranteeId);
+                            
+                            guaranteeTypeMappingList = guaranteeTypeMappingMapper.selectByExample(gExample);
+                            for (GuaranteeTypeMapping guaranteeTypeMapping : guaranteeTypeMappingList) {
+                              ProductTypeMappingExample example = new ProductTypeMappingExample();
+                              example.or().andTypeIdEqualTo(guaranteeTypeMapping.getProductTypeId());
+                              List<ProductTypeMapping> productTypeMappingList = productTypeMappingMapper.selectByExample(example);
+                              for (ProductTypeMapping mapping : productTypeMappingList) {
+                                  productIdList.add(mapping.getProductId());
+                              }
+                          }
+                        }
+                        
+                        //取出抵押Id列表
+//                        if (guaranteeIds != null) {
+//                            String guarIdArr[] = guaranteeIds.split("|");
+//                            
+//                            GuaranteeTypeMappingExample gExample = new GuaranteeTypeMappingExample();
+//                            for (String guarId : guarIdArr) {
+//                                gExample.or().andGuaranteeIdEqualTo(Long.valueOf(guarId));
+//                            }
+//                            
+//                            //获取产品类型列表
+//                            guaranteeTypeMappingList = guaranteeTypeMappingMapper.selectByExample(gExample);
+//                            for (GuaranteeTypeMapping guaranteeTypeMapping : guaranteeTypeMappingList) {
+//                                ProductTypeMappingExample example = new ProductTypeMappingExample();
+//                                example.or().andTypeIdEqualTo(guaranteeTypeMapping.getProductTypeId());
+//                                List<ProductTypeMapping> productTypeMappingList = productTypeMappingMapper.selectByExample(example);
+//                                for (ProductTypeMapping mapping : productTypeMappingList) {
+//                                    productIdList.add(mapping.getProductId());
+//                                }
+//                            }
+//                        }
+                        LoanAmountRange loanAmountRange = null;
+                        Long loanAmountRangeId = environment.getArgument("loanAmountRangeId");
+                        if (loanAmountRangeId != null) {
+                            LoanAmountRangeExample example = new LoanAmountRangeExample();
+                            example.createCriteria().andIdEqualTo(loanAmountRangeId);
+                            List<LoanAmountRange> list = loanAmountRangeMapper.selectByExample(example);
+                            if (list.size() != 0) {
+                                loanAmountRange = list.get(0);
+                            }
+                        }
+                        
+                        Integer term = environment.getArgument("term");
+                        
+                        String selectOrder = null;
+                        Long selectOrderId = environment.getArgument("selectOrderId");
+                        if (selectOrderId != null) {
+                            SelectOrderExample example = new SelectOrderExample();
+                            example.createCriteria().andIdEqualTo(selectOrderId);
+                            List<SelectOrder> list = selectOrderMapper.selectByExample(example);
+                            selectOrder = list.get(0).getField();
+                        }
+                        
+//                        if (guaranteeTypeMappingList != null) {
+//                            for (GuaranteeTypeMapping guaranteeTypeMapping : guaranteeTypeMappingList) {
+//                                example.or().andTyp
+//                            }
+//                            
+//                        }
+                        
                         ProductExample example = new ProductExample();
-                        example.createCriteria().andIsPublishedEqualTo(true);
-                        example.setOrderByClause("weight desc");
+                        Criteria criteria = example.createCriteria();
+                        criteria.andIsPublishedEqualTo(true);
+                        
+                        if (productIdList.size() != 0) {
+                            criteria.andIdIn(productIdList);
+                        }
+                        
+                        if (term != null) {
+                            criteria.andMinTermLessThanOrEqualTo(term).andMaxTermGreaterThanOrEqualTo(term);
+                        }
+                        
+                        if (loanAmountRange != null) {
+                            criteria.andMinAmountGreaterThanOrEqualTo(loanAmountRange.getMinAmount()).andMaxAmountGreaterThanOrEqualTo(loanAmountRange.getMaxAmount());
+                        }
+                        
+                        String orderByClause = "";
+                        if (selectOrder != null) {
+                            orderByClause += selectOrder;
+                        }
+                       
+                        orderByClause += "weight desc";
+                        example.setOrderByClause(orderByClause);
                         List<Product> list = productMapper.selectByExample(example);
                         return list;
                     } ).build();
@@ -117,5 +224,25 @@ public class RecommendProductType {
     @Autowired(required = true)
     public void setProductMapper(ProductMapper productMapper) {
         RecommendProductType.productMapper = productMapper;
+    }
+    
+    @Autowired(required = true)
+    public void setGuaranteeTypeMappingMapper(GuaranteeTypeMappingMapper guaranteeTypeMappingMapper) {
+        RecommendProductType.guaranteeTypeMappingMapper = guaranteeTypeMappingMapper;
+    }
+    
+    @Autowired(required = true)
+    public void setProductTypeMappingMapper(ProductTypeMappingMapper productTypeMappingMapper) {
+        RecommendProductType.productTypeMappingMapper = productTypeMappingMapper;
+    }
+    
+    @Autowired(required = true)
+    public void setSelectOrderMapper(SelectOrderMapper selectOrderMapper) {
+        RecommendProductType.selectOrderMapper = selectOrderMapper;
+    }
+    
+    @Autowired(required = true)
+    public void setLoanAmountRangeMapper(LoanAmountRangeMapper loanAmountRangeMapper) {
+        RecommendProductType.loanAmountRangeMapper = loanAmountRangeMapper;
     }
 }
