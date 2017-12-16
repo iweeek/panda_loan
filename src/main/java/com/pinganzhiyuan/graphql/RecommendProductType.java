@@ -127,7 +127,7 @@ public class RecommendProductType {
                         Long guaranteeId = environment.getArgument("guaranteeId");
                         List<GuaranteeTypeMapping> guaranteeTypeMappingList = null;
                         List<Long> productIdList = new ArrayList<Long>();
-                        if (guaranteeId != null) {
+                        if (guaranteeId != null && guaranteeId != 0) {
                             GuaranteeTypeMappingExample gExample = new GuaranteeTypeMappingExample();
                             gExample.or().andGuaranteeIdEqualTo(guaranteeId);
                             
@@ -164,7 +164,7 @@ public class RecommendProductType {
 //                        }
                         LoanAmountRange loanAmountRange = null;
                         Long loanAmountRangeId = environment.getArgument("loanAmountRangeId");
-                        if (loanAmountRangeId != null) {
+                        if (loanAmountRangeId != null && loanAmountRangeId != 0) {
                             LoanAmountRangeExample example = new LoanAmountRangeExample();
                             example.createCriteria().andIdEqualTo(loanAmountRangeId);
                             List<LoanAmountRange> list = loanAmountRangeMapper.selectByExample(example);
@@ -177,7 +177,7 @@ public class RecommendProductType {
                         
                         String selectOrder = null;
                         Long selectOrderId = environment.getArgument("selectOrderId");
-                        if (selectOrderId != null) {
+                        if (selectOrderId != null && selectOrderId != 0) {
                             SelectOrderExample example = new SelectOrderExample();
                             example.createCriteria().andIdEqualTo(selectOrderId);
                             List<SelectOrder> list = selectOrderMapper.selectByExample(example);
