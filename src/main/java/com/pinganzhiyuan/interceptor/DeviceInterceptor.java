@@ -39,7 +39,9 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
         String uri = request.getRequestURI();
 
         if (version == null || userId == null || channelId == null || userAgent == null || deviceId == null) {
-            return false;
+            if (!channelId.equals("14")) {
+                return false;
+            }
         }
 
 //        InputStream is = null;
