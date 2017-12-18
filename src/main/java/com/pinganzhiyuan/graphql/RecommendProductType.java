@@ -91,7 +91,7 @@ public class RecommendProductType {
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("creditAuth")
                             .description("信用资质")
-                            .type(Scalars.GraphQLInt)
+                            .type(Scalars.GraphQLString)
                             .build())
                     .build();
         }

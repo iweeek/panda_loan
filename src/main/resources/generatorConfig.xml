@@ -153,6 +153,12 @@
       <generatedKey column="id" sqlStatement="MySql" identity="true" />
       <ignoreColumn column="created_at"/>
       <ignoreColumn column="updated_at"/>
-    </table>                                     
+    </table>  
+    
+    <table schema="panda_loan" tableName="client_version" domainObjectName ="ClientVersion" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>                                        
   </context>
 </generatorConfiguration>
