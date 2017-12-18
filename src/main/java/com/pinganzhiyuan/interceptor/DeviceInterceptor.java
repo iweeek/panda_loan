@@ -26,6 +26,10 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         
+        if (request.getMethod().equals("OPTIONS")) {
+            
+        } else {
+        
         MultiReadHttpServletRequest multiReadRequest = new MultiReadHttpServletRequest((HttpServletRequest) request);
         request = multiReadRequest;
 
@@ -78,6 +82,7 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
 
         deviceLogMapper.insert(deviceLog);
         
+        }
         return super.preHandle(request, response, handler);
     }
 

@@ -1,5 +1,6 @@
 package com.pinganzhiyuan.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +19,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.JsonObject;
 import com.pinganzhiyuan.mapper.CaptchaMapper;
 import com.pinganzhiyuan.mapper.ClientMapper;
+import com.pinganzhiyuan.mapper.IdVerificationMapper;
 import com.pinganzhiyuan.mapper.UserMapper;
 import com.pinganzhiyuan.model.Captcha;
 import com.pinganzhiyuan.model.Client;
+import com.pinganzhiyuan.model.IdVerification;
 import com.pinganzhiyuan.model.User;
 import com.pinganzhiyuan.service.CaptchaService;
 import com.pinganzhiyuan.service.TokenService;
+import com.pinganzhiyuan.util.IdVerifUtil;
 import com.pinganzhiyuan.util.ResponseBody;
 
 import io.swagger.annotations.ApiOperation;
@@ -44,6 +50,9 @@ public class ClientController {
     CaptchaMapper captchaMapper;
     
     @Autowired
+    IdVerificationMapper idVerificationMapper;
+    
+    @Autowired
     UserMapper userMapper;
     
     @Autowired
@@ -51,16 +60,34 @@ public class ClientController {
     
     @ApiOperation(value = "创建客户", notes = "创建客户")
     @RequestMapping(value = { "/clients" }, method = RequestMethod.POST)
-    public ResponseEntity<?> create(@ApiParam("用户Id") @RequestParam Long userId, @ApiParam("真实姓名")@RequestParam String name,
-            @ApiParam("身份证号")@RequestParam String idNo, @ApiParam("居住地址")@RequestParam(required = false) String resiAddr,
+    public ResponseEntity<?> create(@ApiParam("用户Id") @RequestParam(required = false) Long userId, @ApiParam("真实姓名")@RequestParam String name,
+            @ApiParam("身份证号")@RequestParam String idNo, @ApiParam("学历")@RequestParam(required = false) String edu,
+            @ApiParam("信用资质")@RequestParam(required = false) String guarantee, @ApiParam("职业")@RequestParam(required = false) String profession,
+            @ApiParam("居住地址")@RequestParam(required = false) String resiAddr,
             @ApiParam("性别")@RequestParam(required = false) Boolean isMan, @ApiParam("民族")@RequestParam(required = false) String nation,
             @ApiParam("生日")@RequestParam(required = false) @DateTimeFormat(pattern="yyyyMMdd") Date birthday, @ApiParam("身份证签发机关")@RequestParam(required = false) String auth,
-            @ApiParam("身份证过期时间")@RequestParam(required = false) @DateTimeFormat(pattern="yyyyMMdd") Date expirDate, @ApiParam("学历")@RequestParam(required = false) String edu) {
+            @ApiParam("身份证过期时间")@RequestParam(required = false) @DateTimeFormat(pattern="yyyyMMdd") Date expirDate) {
         
+        if (!verifyIdentity(name, idNo)) {
+            return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).body(null); 
+        }
         Client client = new Client();
         client.setUserId(userId);
         client.setName(name);
         client.setIdentityNo(idNo);
+        
+        if (edu != null) {
+            client.setEducation(edu);
+        }
+        
+        if (guarantee != null) {
+            client.setGuarantee(guarantee);
+        }
+        
+        if (profession != null) {
+            client.setProfession(profession);;
+        }
+        
         if (resiAddr != null) {
             client.setResidenceAddr(resiAddr);
         }
@@ -85,10 +112,6 @@ public class ClientController {
             client.setIdentityExpiration(expirDate);
         }
         
-        if (edu != null) {
-            client.setEducation(edu);
-        }
-        
         int ret = clientMapper.insertSelective(client);
         return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(null); 
     }
@@ -106,6 +129,38 @@ public class ClientController {
             return ResponseEntity.status(HttpServletResponse.SC_OK).body(client); 
         } else {
             return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND).body(null); 
+        }
+    }
+    
+    Boolean verifyIdentity(String name, String id) {
+        String result = "";
+        try {
+            result = IdVerifUtil.sendIdVerf(name, id, "noPhoto");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return false;
+        }
+        
+        JSONObject obj = new JSONObject(result);
+        try {
+            JSONObject data = obj.getJSONObject("data");
+            
+            IdVerification idVerif = new IdVerification();
+            idVerif.setName(name);
+            idVerif.setIdentity(id);
+            idVerif.setCode(data.getString("code"));
+            idVerif.setDescription(data.getString("desc"));
+            idVerif.setPhoto(data.getString("photo"));
+            idVerif.setTransId(data.getString("trans_id"));
+            idVerif.setTradeNo(data.getString("trade_no"));
+            idVerif.setFee(data.getString("fee"));
+            
+            idVerificationMapper.insert(idVerif);
+        
+            return true;
+        } catch(Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }
