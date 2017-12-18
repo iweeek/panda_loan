@@ -5,20 +5,22 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pinganzhiyuan.mapper.MidNavMapper;
-import com.pinganzhiyuan.model.MidNav;
+import com.pinganzhiyuan.mapper.TopNavMapper;
+import com.pinganzhiyuan.mapper.TopRightEntryMapper;
+import com.pinganzhiyuan.model.TopNav;
+
 import graphql.Scalars;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLObjectType;
 
 @Component
-public class MidNavType {
+public class TopRightEntyType {
     
     private static GraphQLFieldDefinition singleQueryField;
     private static GraphQLFieldDefinition listQueryField;
     
-    private static MidNavMapper midNavMapper;
+    private static TopRightEntryMapper topRightEntyMapper;
 
     private static GraphQLObjectType type;
    
@@ -26,7 +28,7 @@ public class MidNavType {
     public static GraphQLObjectType getType() {
         if (type == null) {
             type = GraphQLObjectType
-                    .newObject().name("MidNav").description("中部导航")
+                    .newObject().name("TopRightEnty").description("顶部右侧入口（今日排行）")
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("id")
                             .description("唯一主键")
@@ -34,11 +36,6 @@ public class MidNavType {
                             .build())
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("title")
-                            .description("标题")
-                            .type(Scalars.GraphQLString)
-                            .build())
-                    .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("subtitle")
                             .description("标题")
                             .type(Scalars.GraphQLString)
                             .build())
@@ -57,36 +54,36 @@ public class MidNavType {
         return type;
     }
 
-//    public static GraphQLFieldDefinition getSingleQueryField() {
-//        if (singleQueryField == null) {
-//            singleQueryField = GraphQLFieldDefinition
-//                    .newFieldDefinition()
-//                    .name("banner")
-//                    .description("banner")
-//                    .type(getType())
-//                    .dataFetcher(environment -> {
-//                        return bannerMapper.selectByExample(null);
-//                    }).build();
-//        }
-//        return singleQueryField;
-//    }
-    
-    public static GraphQLFieldDefinition getListQueryField() {
-        if(listQueryField == null) {
-            listQueryField = GraphQLFieldDefinition.newFieldDefinition()
-                    .name("midNavs")
-                    .description("中部导航列表")
-                    .type(new GraphQLList(getType()))
-                    .dataFetcher(environment ->  {
-                        List<MidNav> list = midNavMapper.selectByExample(null);
-                        return list;
-                    } ).build();
+    public static GraphQLFieldDefinition getSingleQueryField() {
+        if (singleQueryField == null) {
+            singleQueryField = GraphQLFieldDefinition
+                    .newFieldDefinition()
+                    .name("topRightEntry")
+                    .description("顶部右侧入口")
+                    .type(getType())
+                    .dataFetcher(environment -> {
+                        return topRightEntyMapper.selectByExample(null).get(0);
+                    }).build();
         }
-        return listQueryField;
+        return singleQueryField;
     }
     
+//    public static GraphQLFieldDefinition getListQueryField() {
+//        if(listQueryField == null) {
+//            listQueryField = GraphQLFieldDefinition.newFieldDefinition()
+//                    .name("topRightEntries")
+//                    .description("顶部导航列表")
+//                    .type(new GraphQLList(getType()))
+//                    .dataFetcher(environment ->  {
+//                        List<TopNav> list = topNavMapper.selectByExample(null);
+//                        return list;
+//                    } ).build();
+//        }
+//        return listQueryField;
+//    }
+    
     @Autowired(required = true)
-    public void setProductMapper(MidNavMapper midMapper) {
-        MidNavType.midNavMapper = midMapper;
+    public void setProductMapper(TopRightEntryMapper topRightEntyMapper) {
+        TopRightEntyType.topRightEntyMapper = topRightEntyMapper;
     }
 }

@@ -59,7 +59,22 @@ public class RecommendProductType {
                             .type(Scalars.GraphQLString)
                             .build())
                     .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("subtitle")
+                            .newFieldDefinition().name("isNew")
+                            .description("是否为新")
+                            .type(Scalars.GraphQLBoolean)
+                            .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("firstTags")
+                            .description("第一行标签")
+                            .type(Scalars.GraphQLString)
+                            .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("secondTags")
+                            .description("第二行标签")
+                            .type(Scalars.GraphQLString)
+                            .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("description")
                             .description("副标题")
                             .type(Scalars.GraphQLString)
                             .build())
@@ -69,22 +84,17 @@ public class RecommendProductType {
                             .type(Scalars.GraphQLString)
                             .build())
                     .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("targetUrl")
+                            .newFieldDefinition().name("url")
                             .description("导向地址")
                             .type(Scalars.GraphQLString)
                             .build())
                     .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("littleTitle")
-                            .description("小标题")
-                            .type(Scalars.GraphQLString)
-                            .build())
-                    .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("floor")
+                            .newFieldDefinition().name("minAmount")
                             .description("贷款下限")
                             .type(Scalars.GraphQLInt)
                             .build())
                     .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("ceiling")
+                            .newFieldDefinition().name("maxAmount")
                             .description("贷款上限")
                             .type(Scalars.GraphQLInt)
                             .build())

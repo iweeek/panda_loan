@@ -60,13 +60,13 @@ public class ClientController {
     
     @ApiOperation(value = "创建客户", notes = "创建客户")
     @RequestMapping(value = { "/clients" }, method = RequestMethod.POST)
-    public ResponseEntity<?> create(@ApiParam("用户Id") @RequestParam(required = false) Long userId, @ApiParam("真实姓名")@RequestParam String name,
-            @ApiParam("身份证号")@RequestParam String idNo, @ApiParam("学历")@RequestParam(required = false) String edu,
-            @ApiParam("信用资质")@RequestParam(required = false) String guarantee, @ApiParam("职业")@RequestParam(required = false) String profession,
-            @ApiParam("居住地址")@RequestParam(required = false) String resiAddr,
-            @ApiParam("性别")@RequestParam(required = false) Boolean isMan, @ApiParam("民族")@RequestParam(required = false) String nation,
-            @ApiParam("生日")@RequestParam(required = false) @DateTimeFormat(pattern="yyyyMMdd") Date birthday, @ApiParam("身份证签发机关")@RequestParam(required = false) String auth,
-            @ApiParam("身份证过期时间")@RequestParam(required = false) @DateTimeFormat(pattern="yyyyMMdd") Date expirDate) {
+    public ResponseEntity<?> create(@ApiParam("用户Id，必填") @RequestParam(required = false) Long userId, @ApiParam("真实姓名，必填")@RequestParam String name,
+            @ApiParam("身份证号，必填")@RequestParam String idNo, @ApiParam("学历，选填")@RequestParam(required = false) String edu,
+            @ApiParam("信用资质，选填")@RequestParam(required = false) String guarantee, @ApiParam("职业，选填")@RequestParam(required = false) String profession,
+            @ApiParam("居住地址，选填")@RequestParam(required = false) String resiAddr,
+            @ApiParam("性别，选填")@RequestParam(required = false) Boolean isMan, @ApiParam("民族，选填")@RequestParam(required = false) String nation,
+            @ApiParam("生日，选填")@RequestParam(required = false) @DateTimeFormat(pattern="yyyyMMdd") Date birthday, @ApiParam("身份证签发机关，选填")@RequestParam(required = false) String auth,
+            @ApiParam("身份证过期时间，选填")@RequestParam(required = false) @DateTimeFormat(pattern="yyyyMMdd") Date expirDate) {
         
         if (!verifyIdentity(name, idNo)) {
             return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).body(null); 

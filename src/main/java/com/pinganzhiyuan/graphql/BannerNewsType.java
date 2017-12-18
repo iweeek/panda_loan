@@ -39,6 +39,11 @@ public class BannerNewsType {
                             .description("产品名称")
                             .type(Scalars.GraphQLString)
                             .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("url")
+                            .description("产品的跳转地址")
+                            .type(Scalars.GraphQLString)
+                            .build())
                     .build();
         }
         return type;
