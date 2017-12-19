@@ -79,6 +79,22 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
         deviceLog.setUri(uri);
         deviceLog.setPageId(pageId);
         deviceLog.setDeviceId(deviceId);
+        
+        String ll = request.getHeader("Long-Lat");
+        if (ll != null) {
+            String[] llArr = ll.split("\\|");
+            Double longitude = Double.valueOf(llArr[0]);
+            Double latitude = Double.valueOf(llArr[1]);
+            
+            deviceLog.setLongitude(longitude);
+            deviceLog.setLatitude(latitude);
+        }
+        
+        String geoInfo = null;
+        geoInfo = request.getHeader("Geo");
+        if (geoInfo != null) {
+            deviceLog.setGeoInfo(geoInfo);
+        }
 
         deviceLogMapper.insert(deviceLog);
         

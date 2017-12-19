@@ -62,7 +62,7 @@ public class SMSCaptchaController {
         object.put("account", "N2500774");
         object.put("password", "mcyPEAo6eRc3a4");
         
-        String s = " 您的验证码是：" + captcha.getCaptcha();
+        String s = " 您登录的验证码为：" + captcha.getCaptcha() + "，请不要把验证码泄露给他人。如非本人操作，可不用理会。";
         byte[] b;
         String msg;
         try {

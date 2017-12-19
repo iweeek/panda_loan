@@ -47,6 +47,11 @@ public class BannerType {
                             .description("单位")
                             .type(Scalars.GraphQLString)
                             .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("url")
+                            .description("跳转地址")
+                            .type(Scalars.GraphQLString)
+                            .build())
                     .build();
         }
         return type;
