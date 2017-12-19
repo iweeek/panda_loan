@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.github.pagehelper.PageHelper;
 import com.pinganzhiyuan.mapper.GuaranteeTypeMappingMapper;
 import com.pinganzhiyuan.mapper.LoanAmountRangeMapper;
 import com.pinganzhiyuan.mapper.ProductMapper;
@@ -129,6 +130,8 @@ public class RecommendProductType {
                     .argument(GraphQLArgument.newArgument().name("loanAmountRangeId").type(Scalars.GraphQLLong).build())
                     .argument(GraphQLArgument.newArgument().name("term").type(Scalars.GraphQLInt).build())
                     .argument(GraphQLArgument.newArgument().name("selectOrderId").type(Scalars.GraphQLLong).build())
+                    .argument(GraphQLArgument.newArgument().name("pageNumber").type(Scalars.GraphQLInt).build())
+                    .argument(GraphQLArgument.newArgument().name("pageSize").type(Scalars.GraphQLInt).build())
                     .name("recommendProducts")
                     .description("获取产品列表")
                     .type(new GraphQLList(getType()))
@@ -224,6 +227,7 @@ public class RecommendProductType {
                        
                         orderByClause += "weight desc";
                         example.setOrderByClause(orderByClause);
+                        PageHelper.startPage(environment.getArgument("pageNumber"), environment.getArgument("pageSize"));
                         List<Product> list = productMapper.selectByExample(example);
                         return list;
                     } ).build();
