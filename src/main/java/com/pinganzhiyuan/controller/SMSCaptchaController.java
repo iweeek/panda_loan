@@ -26,6 +26,7 @@ import com.pinganzhiyuan.model.Captcha;
 import com.pinganzhiyuan.model.SMSLog;
 import com.pinganzhiyuan.service.CaptchaService;
 import com.pinganzhiyuan.util.CaptchaUtil;
+import com.pinganzhiyuan.util.ResponseBody;
 import com.pinganzhiyuan.util.SMSUtil;
 
 import io.swagger.annotations.ApiOperation;
@@ -46,6 +47,7 @@ public class SMSCaptchaController {
         
         SMSLog log = new SMSLog();
         SMSLog lastLog = captchaService.getLastSMSByPhone(phone);
+        ResponseBody resp = new ResponseBody();
         //90秒内同一手机不能请求第二次
         if (lastLog != null) {
             if (new Date().getTime() - lastLog.getSendTime().getTime() < 90) {
@@ -73,26 +75,39 @@ public class SMSCaptchaController {
             object.put("phone", phone);
             object.put("uid", captcha.getId());
             
-            Boolean result = true;
+            String result = null;
             result = SMSUtil.sendSMS(object.toString());
-            
-            if (result) {   
+            if (result != null) {
+                JSONObject jsonObj = new JSONObject(result.toString());
+                
                 log = new SMSLog();
-                log.setMessage(object.toString());
+                log.setReqMsg(object.toString());
                 log.setPhone(phone);
                 log.setSendTime(new Date());
                 log.setChannelId((byte) 0);
                 log.setCaptId(captcha.getId());
+                log.setRespMsg(result);
                 smsLogMapper.insert(log);
+                
+                if (jsonObj.getString("code").equals("0")) { 
+                    Map<String, String> map = new HashMap<String, String>();
+                    map.put("keySMSCapt", String.valueOf(log.getId()));
+                    resp.statusMsg = jsonObj.getString("errorMsg");
+                    resp.obj1 = map;
+                    return ResponseEntity.status(HttpServletResponse.SC_OK).body(resp); 
+                } else {
+                    resp.statusMsg = jsonObj.getString("errorMsg");
+                    return ResponseEntity.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).body(resp); 
+                }
+            } else {
+                resp.statusMsg = "获取短信验证码失败，请稍后重试";
+                return ResponseEntity.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).body(resp); 
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+            resp.statusMsg = "获取短信验证码失败，请稍后重试";
+            return ResponseEntity.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).body(resp); 
         }
-        
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("keySMSCapt", String.valueOf(log.getId()));
-        
-        return ResponseEntity.status(HttpServletResponse.SC_OK).body(map); 
 
     }
 

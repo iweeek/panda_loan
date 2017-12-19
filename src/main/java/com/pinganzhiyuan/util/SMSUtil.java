@@ -16,7 +16,7 @@ import com.pinganzhiyuan.model.SMSLog;
 
 public class SMSUtil {
     
-    public static Boolean sendSMS(String str) throws UnsupportedEncodingException {  
+    public static String sendSMS(String str) throws UnsupportedEncodingException {  
         String url = "http://smssh1.253.com/msg/send/json";
         CloseableHttpClient httpclient = HttpClients.createDefault(); 
         HttpPost httpPost = new HttpPost(url);  
@@ -44,15 +44,13 @@ public class SMSUtil {
             }
 
             System.out.println("finalResult " + sb.toString());
-            JSONObject resp = new JSONObject(sb.toString());
+            
             httpclient.close();
-            if (resp.getInt("code") == 0) {
-                return true;
-            }
+            return sb.toString();
         } catch (IOException e) {
             e.printStackTrace();
         } 
         
-        return false;
+        return null;
     }  
 }
