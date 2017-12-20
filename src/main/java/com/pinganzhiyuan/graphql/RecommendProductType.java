@@ -215,12 +215,12 @@ public class RecommendProductType {
                             criteria.andIdIn(productIdList);
                         }
                         
-                        if (term != null && (!term.equals("0"))) {
+                        if (term != null && term != 0) {
                             criteria.andMinTermLessThanOrEqualTo(term).andMaxTermGreaterThanOrEqualTo(term);
                         }
                         
                         if (loanAmountRange != null) {
-                            criteria.andMinAmountGreaterThanOrEqualTo(loanAmountRange.getMinAmount()).andMaxAmountGreaterThanOrEqualTo(loanAmountRange.getMaxAmount());
+                            criteria.andMinAmountLessThanOrEqualTo(loanAmountRange.getMinAmount()).andMaxAmountGreaterThanOrEqualTo(loanAmountRange.getMaxAmount());
                         }
                         
                         if (typeId != null) {
@@ -228,7 +228,7 @@ public class RecommendProductType {
                         }
                         
                         String orderByClause = "";
-                        if (selectOrder != null) {
+                        if (selectOrder != null && !selectOrder.equals("")) {
                             orderByClause += selectOrder + ", ";
                         }
                        
