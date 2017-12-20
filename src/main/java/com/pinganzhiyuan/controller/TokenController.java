@@ -2,6 +2,7 @@ package com.pinganzhiyuan.controller;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +20,7 @@ import com.pinganzhiyuan.mapper.CaptchaMapper;
 import com.pinganzhiyuan.mapper.UserMapper;
 import com.pinganzhiyuan.model.Captcha;
 import com.pinganzhiyuan.model.User;
+import com.pinganzhiyuan.model.UserExample;
 import com.pinganzhiyuan.service.CaptchaService;
 import com.pinganzhiyuan.service.TokenService;
 import com.pinganzhiyuan.util.ResponseBody;
@@ -65,13 +67,21 @@ public class TokenController {
         
         isPassed = captchaService.verifyCaptcha(smsCapt, keySMSCapt);
         if (isPassed) {
+            UserExample example = new UserExample();
+            example.createCriteria().andUsernameEqualTo(username);
+            List<User> list = userMapper.selectByExample(example);
+            if (list.size() > 0) {
+                resBody.statusMsg = "登录成功";
+                resBody.obj1 = list.get(0);
+                return ResponseEntity.status(HttpServletResponse.SC_OK).body(resBody);
+            }
+           
             User user = new User();
+            user.setUsername(username);
             user.setPassword("");
             user.setRegistTime((new Date()).getTime());
-            user.setUsername(username);
             userMapper.insert(user);
             
-            user.setPassword("");
             resBody.statusMsg = "登录成功";
             resBody.obj1 = user;
             return ResponseEntity.status(HttpServletResponse.SC_OK).body(resBody);

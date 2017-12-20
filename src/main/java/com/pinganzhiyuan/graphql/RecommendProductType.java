@@ -215,7 +215,7 @@ public class RecommendProductType {
                             criteria.andIdIn(productIdList);
                         }
                         
-                        if (term != null) {
+                        if (term != null && (!term.equals("0"))) {
                             criteria.andMinTermLessThanOrEqualTo(term).andMaxTermGreaterThanOrEqualTo(term);
                         }
                         
@@ -229,10 +229,10 @@ public class RecommendProductType {
                         
                         String orderByClause = "";
                         if (selectOrder != null) {
-                            orderByClause += selectOrder;
+                            orderByClause += selectOrder + ", ";
                         }
                        
-                        orderByClause += " weight desc";
+                        orderByClause += "weight desc";
                         example.setOrderByClause(orderByClause);
                         
                         Integer pageNumber = environment.getArgument("pageNumber");
