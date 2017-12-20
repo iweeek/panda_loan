@@ -227,7 +227,18 @@ public class RecommendProductType {
                        
                         orderByClause += "weight desc";
                         example.setOrderByClause(orderByClause);
-                        PageHelper.startPage(environment.getArgument("pageNumber"), environment.getArgument("pageSize"));
+                        
+                        Integer pageNumber = environment.getArgument("pageNumber");
+                        if (pageNumber == null) {
+                            pageNumber = 1;
+                        }
+                        
+                        Integer pageSize = environment.getArgument("pageSize");
+                        if (pageSize == null) {
+                            pageSize = 10;
+                        }
+                        
+                        PageHelper.startPage(pageNumber, pageSize);
                         List<Product> list = productMapper.selectByExample(example);
                         return list;
                     } ).build();

@@ -42,6 +42,7 @@ public class TokenController {
     @Autowired
     UserMapper userMapper;
     
+    @SuppressWarnings("rawtypes")
     @ApiOperation(value = "创建token", notes = "验证用户名与密码，为用户创建一个用于鉴权的Token")
     @RequestMapping(value = { "/tokens" }, method = RequestMethod.POST)
     public ResponseEntity<?> create(@ApiParam("用户名（电话号码）") @RequestParam String username, @ApiParam("图形验证码的key")@RequestParam(required = false) String keyImageCapt,
@@ -50,7 +51,7 @@ public class TokenController {
         
         Boolean isPassed = false;
         
-        ResponseBody<String> resBody = new ResponseBody<String>();
+        ResponseBody resBody = new ResponseBody<String>();
         
         String msg;
         
@@ -71,7 +72,9 @@ public class TokenController {
             userMapper.insert(user);
             
             user.setPassword("");
-            return ResponseEntity.status(HttpServletResponse.SC_OK).body(user);
+            resBody.statusMsg = "登录成功";
+            resBody.obj1 = user;
+            return ResponseEntity.status(HttpServletResponse.SC_OK).body(resBody);
         } else {
             resBody.statusMsg = "短信验证码不正确";
             return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(resBody);

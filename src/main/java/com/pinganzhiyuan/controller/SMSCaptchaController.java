@@ -91,7 +91,7 @@ public class SMSCaptchaController {
                 
                 if (jsonObj.getString("code").equals("0")) { 
                     Map<String, String> map = new HashMap<String, String>();
-                    map.put("keySMSCapt", String.valueOf(log.getId()));
+                    map.put("keySMSCapt", String.valueOf(captcha.getId()));
                     resp.statusMsg = jsonObj.getString("errorMsg");
                     resp.obj1 = map;
                     return ResponseEntity.status(HttpServletResponse.SC_OK).body(resp); 
