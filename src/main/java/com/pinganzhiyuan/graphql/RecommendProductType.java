@@ -130,6 +130,7 @@ public class RecommendProductType {
                     .argument(GraphQLArgument.newArgument().name("loanAmountRangeId").type(Scalars.GraphQLLong).build())
                     .argument(GraphQLArgument.newArgument().name("term").type(Scalars.GraphQLInt).build())
                     .argument(GraphQLArgument.newArgument().name("selectOrderId").type(Scalars.GraphQLLong).build())
+                    .argument(GraphQLArgument.newArgument().name("typeId").type(Scalars.GraphQLInt).build())
                     .argument(GraphQLArgument.newArgument().name("pageNumber").type(Scalars.GraphQLInt).build())
                     .argument(GraphQLArgument.newArgument().name("pageSize").type(Scalars.GraphQLInt).build())
                     .name("recommendProducts")
@@ -204,6 +205,8 @@ public class RecommendProductType {
 //                            
 //                        }
                         
+                        Integer typeId = environment.getArgument("typeId");
+                        
                         ProductExample example = new ProductExample();
                         Criteria criteria = example.createCriteria();
                         criteria.andIsPublishedEqualTo(true);
@@ -220,12 +223,16 @@ public class RecommendProductType {
                             criteria.andMinAmountGreaterThanOrEqualTo(loanAmountRange.getMinAmount()).andMaxAmountGreaterThanOrEqualTo(loanAmountRange.getMaxAmount());
                         }
                         
+                        if (typeId != null) {
+                            criteria.andApplyTimesGreaterThan(0);
+                        }
+                        
                         String orderByClause = "";
                         if (selectOrder != null) {
                             orderByClause += selectOrder;
                         }
                        
-                        orderByClause += "weight desc";
+                        orderByClause += " weight desc";
                         example.setOrderByClause(orderByClause);
                         
                         Integer pageNumber = environment.getArgument("pageNumber");

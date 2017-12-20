@@ -37,6 +37,20 @@ public class ClientVersionServiceImpl implements com.pinganzhiyuan.service.Clien
         }
         return null;
     }
+    
+    @Override
+    public ClientVersion getVersion(byte platformId, int channelId, String packageName, Integer versionCode) {
+        ClientVersionExample example = new ClientVersionExample();
+        example.createCriteria().andPackageNameEqualTo(packageName).andPlatformIdEqualTo(platformId).andChannelIdEqualTo(channelId).andIsPublishedEqualTo(true)
+        .andVersionCodeEqualTo(versionCode);
+        example.setOrderByClause("publish_time desc");
+        
+        List<ClientVersion> list = clientVersionMapper.selectByExample(example);
+        if (list.size() > 0) {
+            return list.get(0);
+        }
+        return null;
+    }
 	
 
 }

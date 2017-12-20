@@ -64,7 +64,7 @@ public class ClientType {
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("isMan")
                             .description("性别")
-                            .type(Scalars.GraphQLString)
+                            .type(Scalars.GraphQLBoolean)
                             .build())
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("nation")

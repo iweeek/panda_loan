@@ -16,6 +16,7 @@ public class ClientVersionType {
 	private static ClientVersionService clientVersionService;
 	private static GraphQLObjectType type;
 	private static GraphQLFieldDefinition latestVerisonQueryField;
+	private static GraphQLFieldDefinition verisonMaskQueryField;
 	
 	public static GraphQLObjectType getType() {
 		if(type == null) {
@@ -86,6 +87,27 @@ public class ClientVersionType {
 		}
         return latestVerisonQueryField;
     }
+	
+	   public static GraphQLFieldDefinition getVerisonQueryField() {
+	        if(verisonMaskQueryField == null) {
+	            verisonMaskQueryField = GraphQLFieldDefinition.newFieldDefinition()
+	                    .argument(GraphQLArgument.newArgument().name("platformId").type(Scalars.GraphQLByte).build())
+	                    .argument(GraphQLArgument.newArgument().name("channelId").type(Scalars.GraphQLInt).build())
+	                    .argument(GraphQLArgument.newArgument().name("packageName").type(Scalars.GraphQLString).build())
+	                    .argument(GraphQLArgument.newArgument().name("versionCode").type(Scalars.GraphQLInt).build())
+	                    .name("version")
+	                    .description("获取某个版本信息")
+	                    .type(getType())
+	                    .dataFetcher(environment ->  {
+	                        byte platformId = environment.getArgument("platformId");
+	                        int channelId = environment.getArgument("channelId");
+	                        String packageName = environment.getArgument("packageName");
+	                        int versionCode = environment.getArgument("versionCode");
+	                        return clientVersionService.getVersion(platformId, channelId, packageName, versionCode);
+	                    } ).build();
+	        }
+	        return verisonMaskQueryField;
+	    }
 	
 	@Autowired(required = true) 
 	public void setAndroidVersionInfoService(ClientVersionService androidVersionInfoService) {

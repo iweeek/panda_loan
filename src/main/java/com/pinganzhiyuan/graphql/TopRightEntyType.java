@@ -28,31 +28,53 @@ public class TopRightEntyType {
     public static GraphQLObjectType getType() {
         if (type == null) {
             type = GraphQLObjectType
-                    .newObject().name("TopRightEnty").description("顶部右侧入口（今日排行）")
-                    .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("id")
-                            .description("唯一主键")
-                            .type(Scalars.GraphQLLong)
-                            .build())
+                    .newObject().name("TopRightEnty").description("顶部右侧入口（七日排行）")
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("title")
-                            .description("标题")
+                            .description("名称")
                             .type(Scalars.GraphQLString)
+                            .staticValue("七日排行")
+                            .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("selectParam")
+                            .description("选择参数名")
+                            .type(Scalars.GraphQLString)
+                            .staticValue("typeId")
                             .build())
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("iconUrl")
-                            .description("icon地址")
+                            .description("图标地址")
                             .type(Scalars.GraphQLString)
+                            .staticValue("")
                             .build())
                     .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("url")
-                            .description("跳转地址")
-                            .type(Scalars.GraphQLString)
+                            .newFieldDefinition().name("paramValue")
+                            .description("选择参数值")
+                            .type(Scalars.GraphQLInt)
+                            .staticValue(1)
                             .build())
                     .build();
         }
         return type;
     }
+    
+//    public static GraphQLFieldDefinition getTitleField() {
+//        if (singleQueryField == null) {
+//            singleQueryField = GraphQLFieldDefinition
+//                    .newFieldDefinition()
+//                    .name("topRightEntryName")
+//                    .description("名称")
+//                    .type(Scalars.GraphQLString)
+//                    .staticValue("七日排行")
+//                    .build()
+//                    .name("topRightEntryTypeId")
+//                    .description("选择类型Id")
+//                    .type(Scalars.GraphQLInt)
+//                    .staticValue(1)
+//                    .build();
+//        }
+//        return singleQueryField;
+//    }
 
     public static GraphQLFieldDefinition getSingleQueryField() {
         if (singleQueryField == null) {
@@ -61,9 +83,8 @@ public class TopRightEntyType {
                     .name("topRightEntry")
                     .description("顶部右侧入口")
                     .type(getType())
-                    .dataFetcher(environment -> {
-                        return topRightEntyMapper.selectByExample(null).get(0);
-                    }).build();
+                    .staticValue(type)
+                    .build();
         }
         return singleQueryField;
     }
@@ -72,7 +93,7 @@ public class TopRightEntyType {
 //        if(listQueryField == null) {
 //            listQueryField = GraphQLFieldDefinition.newFieldDefinition()
 //                    .name("topRightEntries")
-//                    .description("顶部导航列表")
+//                    .description("顶部右侧导航列表")
 //                    .type(new GraphQLList(getType()))
 //                    .dataFetcher(environment ->  {
 //                        List<TopNav> list = topNavMapper.selectByExample(null);
