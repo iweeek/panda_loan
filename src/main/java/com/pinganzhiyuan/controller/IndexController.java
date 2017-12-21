@@ -22,16 +22,16 @@ public class IndexController {
     @RequestMapping(value="/record", method = RequestMethod.GET)
     public void read(HttpServletRequest request, HttpServletResponse response) {
         
-//        String deviceId = request.getHeader("Device-Id");
-//        String userId = request.getHeader("User-Id");
+        String deviceId = request.getHeader("Device-Id");
+        String userId = request.getHeader("User-Id");
         String redirectUri = request.getParameter("redirect");
         if (redirectUri == null) {
         } else {
             try {
                 LenderAccessLog log = new LenderAccessLog();
                 log.setLenderUrl(redirectUri);
-//                log.setDeviceId(deviceId);
-//                log.setUserId(Long.valueOf(userId));
+                log.setDeviceId(deviceId);
+                log.setUserId(Long.valueOf(userId));
                 lenderAccessLogMapper.insert(log);
                 response.sendRedirect(redirectUri);
             } catch (IOException e) {
