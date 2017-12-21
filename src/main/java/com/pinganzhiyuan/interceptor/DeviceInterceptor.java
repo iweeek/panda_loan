@@ -2,6 +2,7 @@ package com.pinganzhiyuan.interceptor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,8 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.pinganzhiyuan.mapper.DeviceLogMapper;
+import com.pinganzhiyuan.mapper.LenderAccessLogMapper;
 import com.pinganzhiyuan.model.DeviceLog;
 import com.pinganzhiyuan.model.DeviceLogExample;
+import com.pinganzhiyuan.model.LenderAccessLog;
 
 public class DeviceInterceptor extends HandlerInterceptorAdapter {
 
@@ -21,6 +24,9 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
     private DeviceLogMapper deviceLogMapper;
+    
+    @Autowired
+    private LenderAccessLogMapper lenderAccessLogMapper;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -35,13 +41,29 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             String userAgent = request.getHeader("User-Agent");
             String channelId = request.getHeader("Channel-Id");
             String deviceId = request.getHeader("Device-Id");
+            String uri = request.getHeader("Request-Uri");
 
             String ip = request.getRemoteAddr();
-            String uri = request.getRequestURI();
+//            String uri = request.getRequestURI();
 
-            if (version == null || userId == null || channelId == null || userAgent == null || deviceId == null) {
+            if (version == null || userId == null || channelId == null || userAgent == null || deviceId == null || uri == null) {
                     return false;
             }
+            
+//            String redirectUri = request.getParameter("redirect");
+//            if (redirectUri == null) {
+//            } else {
+//                redirectUri = URLDecoder.decode(redirectUri);
+//                try {
+//                    LenderAccessLog log = new LenderAccessLog();
+//                    
+//                    log.setLenderUrl(redirectUri);
+//                    lenderAccessLogMapper.insert(log);
+//                    response.sendRedirect(redirectUri);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
 
             // InputStream is = null;
             // String body = "";

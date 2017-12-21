@@ -3,6 +3,7 @@ package com.pinganzhiyuan.controller;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +27,7 @@ import com.pinganzhiyuan.mapper.IdVerificationMapper;
 import com.pinganzhiyuan.mapper.UserMapper;
 import com.pinganzhiyuan.model.Captcha;
 import com.pinganzhiyuan.model.Client;
+import com.pinganzhiyuan.model.ClientExample;
 import com.pinganzhiyuan.model.IdVerification;
 import com.pinganzhiyuan.model.User;
 import com.pinganzhiyuan.service.CaptchaService;
@@ -70,6 +72,13 @@ public class ClientController {
         
         if (!verifyIdentity(name, idNo)) {
             return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).body(null); 
+        }
+        
+        ClientExample example = new ClientExample();
+        example.createCriteria().andUserIdEqualTo(userId);
+        List<Client> list = clientMapper.selectByExample(example);
+        if (list.size() > 0) {
+            return ResponseEntity.status(HttpServletResponse.SC_CONFLICT).body(null); 
         }
         
         Client client = new Client();

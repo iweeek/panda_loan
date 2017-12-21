@@ -117,6 +117,12 @@
       <generatedKey column="id" sqlStatement="MySql" identity="true" />
       <ignoreColumn column="created_at"/>
       <ignoreColumn column="updated_at"/>
+    </table>  
+    
+    <table schema="panda_loan" tableName="guarantee_product_mapping" domainObjectName ="GuaranteeProductMapping" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
     </table>      
     
     <table schema="panda_loan" tableName="sms_log" domainObjectName ="SMSLog" >
@@ -171,6 +177,12 @@
       <generatedKey column="id" sqlStatement="MySql" identity="true" />
       <ignoreColumn column="created_at"/>
       <ignoreColumn column="updated_at"/>
-    </table>                                          
+    </table>  
+    
+    <table schema="panda_loan" tableName="lender_access_log" domainObjectName ="LenderAccessLog" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>                                             
   </context>
 </generatorConfiguration>

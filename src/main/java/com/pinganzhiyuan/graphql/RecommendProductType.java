@@ -7,11 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.github.pagehelper.PageHelper;
+import com.pinganzhiyuan.mapper.GuaranteeProductMappingMapper;
 import com.pinganzhiyuan.mapper.GuaranteeTypeMappingMapper;
 import com.pinganzhiyuan.mapper.LoanAmountRangeMapper;
 import com.pinganzhiyuan.mapper.ProductMapper;
 import com.pinganzhiyuan.mapper.ProductTypeMappingMapper;
 import com.pinganzhiyuan.mapper.SelectOrderMapper;
+import com.pinganzhiyuan.model.GuaranteeProductMapping;
+import com.pinganzhiyuan.model.GuaranteeProductMappingExample;
 import com.pinganzhiyuan.model.GuaranteeTypeMapping;
 import com.pinganzhiyuan.model.GuaranteeTypeMappingExample;
 import com.pinganzhiyuan.model.Product;
@@ -38,6 +41,7 @@ public class RecommendProductType {
     
     private static ProductMapper productMapper;
     private static GuaranteeTypeMappingMapper guaranteeTypeMappingMapper;
+    private static GuaranteeProductMappingMapper guaranteeProductMappingMapper;
     private static ProductTypeMappingMapper productTypeMappingMapper;
     private static SelectOrderMapper selectOrderMapper;
     private static LoanAmountRangeMapper loanAmountRangeMapper;
@@ -131,6 +135,7 @@ public class RecommendProductType {
                     .argument(GraphQLArgument.newArgument().name("term").type(Scalars.GraphQLInt).build())
                     .argument(GraphQLArgument.newArgument().name("selectOrderId").type(Scalars.GraphQLLong).build())
                     .argument(GraphQLArgument.newArgument().name("typeId").type(Scalars.GraphQLInt).build())
+                    .argument(GraphQLArgument.newArgument().name("productTypeId").type(Scalars.GraphQLLong).build())
                     .argument(GraphQLArgument.newArgument().name("pageNumber").type(Scalars.GraphQLInt).build())
                     .argument(GraphQLArgument.newArgument().name("pageSize").type(Scalars.GraphQLInt).build())
                     .name("recommendProducts")
@@ -142,18 +147,40 @@ public class RecommendProductType {
                         List<GuaranteeTypeMapping> guaranteeTypeMappingList = null;
                         List<Long> productIdList = new ArrayList<Long>();
                         if (guaranteeId != null && guaranteeId != 0) {
-                            GuaranteeTypeMappingExample gExample = new GuaranteeTypeMappingExample();
-                            gExample.or().andGuaranteeIdEqualTo(guaranteeId);
+                            //两次映射的逻辑
+//                            GuaranteeTypeMappingExample gExample = new GuaranteeTypeMappingExample();
+//                            gExample.or().andGuaranteeIdEqualTo(guaranteeId);
+//                            
+//                            guaranteeTypeMappingList = guaranteeTypeMappingMapper.selectByExample(gExample);
+//                            for (GuaranteeTypeMapping guaranteeTypeMapping : guaranteeTypeMappingList) {
+//                              ProductTypeMappingExample example = new ProductTypeMappingExample();
+//                              example.or().andTypeIdEqualTo(guaranteeTypeMapping.getProductTypeId());
+//                              List<ProductTypeMapping> productTypeMappingList = productTypeMappingMapper.selectByExample(example);
+//                              for (ProductTypeMapping mapping : productTypeMappingList) {
+//                                  productIdList.add(mapping.getProductId());
+//                              }
+//                          }
                             
-                            guaranteeTypeMappingList = guaranteeTypeMappingMapper.selectByExample(gExample);
-                            for (GuaranteeTypeMapping guaranteeTypeMapping : guaranteeTypeMappingList) {
-                              ProductTypeMappingExample example = new ProductTypeMappingExample();
-                              example.or().andTypeIdEqualTo(guaranteeTypeMapping.getProductTypeId());
-                              List<ProductTypeMapping> productTypeMappingList = productTypeMappingMapper.selectByExample(example);
-                              for (ProductTypeMapping mapping : productTypeMappingList) {
+                            //一级映射关系
+                            GuaranteeProductMappingExample example = new GuaranteeProductMappingExample();
+                            example.createCriteria().andGuaranteeIdEqualTo(guaranteeId);
+                            List<GuaranteeProductMapping> list = guaranteeProductMappingMapper.selectByExample(example);
+                            for (GuaranteeProductMapping mapping : list) {
+                              productIdList.add(mapping.getProductId());
+                          }
+                        }
+                        
+                        Long productTypeId = environment.getArgument("productTypeId");
+                        if (productTypeId != null) {
+                            ProductTypeMappingExample example = new ProductTypeMappingExample();
+                            example.createCriteria().andTypeIdEqualTo(productTypeId);
+                            
+                            List<ProductTypeMapping> list = productTypeMappingMapper.selectByExample(example);
+                            if (list.size() > 0) {
+                                for (ProductTypeMapping mapping : list) {
                                   productIdList.add(mapping.getProductId());
                               }
-                          }
+                            }
                         }
                         
                         //取出抵押Id列表
@@ -276,5 +303,10 @@ public class RecommendProductType {
     @Autowired(required = true)
     public void setLoanAmountRangeMapper(LoanAmountRangeMapper loanAmountRangeMapper) {
         RecommendProductType.loanAmountRangeMapper = loanAmountRangeMapper;
+    }
+    
+    @Autowired(required = true)
+    public void setGuaranteeProductMappingMapper(GuaranteeProductMappingMapper guaranteeProductMappingMapper) {
+        RecommendProductType.guaranteeProductMappingMapper = guaranteeProductMappingMapper;
     }
 }
