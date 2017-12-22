@@ -54,6 +54,7 @@ public class GraphQLServiceImpl implements GraphQLService {
                 .field(TermType.getListQueryField())
                 .field(ClientVersionType.getLatestVerisonQueryField())
                 .field(ClientVersionType.getVerisonQueryField())
+                .field(ClientVersionType.getVerisonsQueryField())
                 .field(TopRightEntyType.getSingleQueryField())
                 .field(ClientType.getSingleQueryField())
                 .build();

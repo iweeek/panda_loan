@@ -29,7 +29,7 @@ public class ClientVersionServiceImpl implements com.pinganzhiyuan.service.Clien
     public ClientVersion getLatestVersionInfo(byte platformId, int channelId, String packageName) {
         ClientVersionExample example = new ClientVersionExample();
         example.createCriteria().andPackageNameEqualTo(packageName).andPlatformIdEqualTo(platformId).andChannelIdEqualTo(channelId).andIsPublishedEqualTo(true);
-        example.setOrderByClause("publish_time desc");
+        example.setOrderByClause("version_code desc");
         
         List<ClientVersion> list = clientVersionMapper.selectByExample(example);
         if (list.size() > 0) {
@@ -41,7 +41,7 @@ public class ClientVersionServiceImpl implements com.pinganzhiyuan.service.Clien
     @Override
     public ClientVersion getVersion(byte platformId, int channelId, String packageName, Integer versionCode) {
         ClientVersionExample example = new ClientVersionExample();
-        example.createCriteria().andPackageNameEqualTo(packageName).andPlatformIdEqualTo(platformId).andChannelIdEqualTo(channelId).andIsPublishedEqualTo(true)
+        example.createCriteria().andPackageNameEqualTo(packageName).andPlatformIdEqualTo(platformId).andChannelIdEqualTo(channelId)
         .andVersionCodeEqualTo(versionCode);
         example.setOrderByClause("publish_time desc");
         
