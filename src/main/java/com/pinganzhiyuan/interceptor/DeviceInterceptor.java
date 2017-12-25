@@ -86,6 +86,11 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             if (strPageId == null) {
                 strPageId = "0";
             }
+            
+            String packageName = request.getHeader("Package-Name");
+            if (packageName == null) {
+                packageName = "";
+            }
             int pageId = Integer.valueOf(strPageId);
             DeviceLog deviceLog = new DeviceLog();
             deviceLog.setVersion(Integer.valueOf(version));
@@ -94,6 +99,7 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             deviceLog.setUserAgent(userAgent);
             deviceLog.setIp(ip);
             deviceLog.setUri(uri);
+            deviceLog.setPackageName(packageName);
             deviceLog.setPageId(pageId);
             deviceLog.setDeviceId(deviceId);
 
@@ -116,6 +122,11 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             String pId = request.getHeader("Pid");
             if (pId != null) {
                 deviceLog.setpId(Long.valueOf(pId));
+            }
+            
+            String isWebview = request.getHeader("Is-Webview");
+            if (isWebview != null) {
+                deviceLog.setIsWebview(Byte.valueOf(isWebview));
             }
 
             deviceLogMapper.insert(deviceLog);

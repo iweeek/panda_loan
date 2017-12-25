@@ -52,6 +52,11 @@ public class MidNavType {
                             .description("跳转地址")
                             .type(Scalars.GraphQLString)
                             .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("productId")
+                            .description("产品Id")
+                            .type(Scalars.GraphQLLong)
+                            .build())
                     .build();
         }
         return type;

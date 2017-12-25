@@ -24,6 +24,7 @@ public class IndexController {
         
         String deviceId = request.getHeader("Device-Id");
         String userId = request.getHeader("User-Id");
+        String pId = request.getHeader("Pid");
         String redirectUri = request.getParameter("redirect");
         if (redirectUri == null) {
         } else {
@@ -32,6 +33,7 @@ public class IndexController {
                 log.setLenderUrl(redirectUri);
                 log.setDeviceId(deviceId);
                 log.setUserId(Long.valueOf(userId));
+                log.setpId(Long.valueOf(pId));
                 lenderAccessLogMapper.insert(log);
                 response.sendRedirect(redirectUri);
             } catch (IOException e) {

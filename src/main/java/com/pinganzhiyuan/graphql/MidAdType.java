@@ -47,8 +47,13 @@ public class MidAdType {
                             .build())
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("description")
-                            .description("表述")
+                            .description("描述")
                             .type(Scalars.GraphQLString)
+                            .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("productId")
+                            .description("产品Id")
+                            .type(Scalars.GraphQLLong)
                             .build())
                     .build();
         }
