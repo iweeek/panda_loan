@@ -112,6 +112,11 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             if (geoInfo != null) {
                 deviceLog.setGeoInfo(geoInfo);
             }
+            
+            String pId = request.getHeader("Pid");
+            if (pId != null) {
+                deviceLog.setpId(Long.valueOf(pId));
+            }
 
             deviceLogMapper.insert(deviceLog);
 
