@@ -17,6 +17,7 @@ import com.pinganzhiyuan.graphql.TopNavType;
 import com.pinganzhiyuan.graphql.TopRightEntyType;
 import com.pinganzhiyuan.graphql.RecommendProductType;
 import com.pinganzhiyuan.graphql.SelectOrderType;
+import com.pinganzhiyuan.graphql.TabType;
 import com.pinganzhiyuan.graphql.TermType;
 import com.pinganzhiyuan.service.GraphQLService;
 
@@ -57,6 +58,7 @@ public class GraphQLServiceImpl implements GraphQLService {
                 .field(ClientVersionType.getVerisonsQueryField())
                 .field(TopRightEntyType.getSingleQueryField())
                 .field(ClientType.getSingleQueryField())
+                .field(TabType.getListQueryField())
                 .build();
 		
 		GraphQLSchema schema = GraphQLSchema.newSchema()

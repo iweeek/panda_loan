@@ -33,7 +33,7 @@ public class TopRightEntyType {
                             .newFieldDefinition().name("title")
                             .description("名称")
                             .type(Scalars.GraphQLString)
-                            .staticValue("七日排行")
+                            .staticValue("近七日申请排行")
                             .build())
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("selectParam")
