@@ -60,8 +60,13 @@
      <mvc:interceptors>
     <!-- 定义在mvc:interceptor下面的表示是对特定的请求才进行拦截的 -->
         <mvc:interceptor>
-            <mvc:mapping path="/graphql/**"/>
-            <mvc:mapping path="/**"/>
+            <mvc:mapping path="/graphql/query/**"/>
+            <mvc:mapping path="/tokens/**"/>
+            <mvc:mapping path="/smsCaptcha/**"/>
+            <mvc:mapping path="/record/**"/>
+            <mvc:mapping path="/imageCaptchas/**"/>
+            <mvc:mapping path="/versions/**"/>
+            <mvc:mapping path="/clients/**"/>
             <bean class="com.pinganzhiyuan.interceptor.DeviceInterceptor"></bean>
         </mvc:interceptor>
     </mvc:interceptors> 
