@@ -21,7 +21,9 @@ import com.pinganzhiyuan.model.SMSLog;
 
 public class IdVerifUtil {
     
-    final static String token = "a5cb8b9ae9db4025b9d324fa95592755";
+//    final static String token = "a5cb8b9ae9db4025b9d324fa95592755"; // 测试
+    
+    final static String token = "6c9db744435c4076bd52291db1a1f7ec";
     
     public static String sendIdVerf(String name, String id, String type) throws UnsupportedEncodingException {  
         String result= "";
