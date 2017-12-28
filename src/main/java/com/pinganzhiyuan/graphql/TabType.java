@@ -11,8 +11,10 @@ import com.pinganzhiyuan.mapper.TabMapper;
 import com.pinganzhiyuan.mapper.TermMapper;
 import com.pinganzhiyuan.model.Tab;
 import com.pinganzhiyuan.model.TabExample;
+import com.pinganzhiyuan.model.TabExample.Criteria;
 
 import graphql.Scalars;
+import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLObjectType;
@@ -75,9 +77,30 @@ public class TabType {
             listQueryField = GraphQLFieldDefinition.newFieldDefinition()
                     .name("tabs")
                     .description("底部标签列表")
+                    .argument(GraphQLArgument.newArgument().name("packageName").type(Scalars.GraphQLString).build())
+                    .argument(GraphQLArgument.newArgument().name("versionCode").type(Scalars.GraphQLInt).build())
+                    .argument(GraphQLArgument.newArgument().name("channelId").type(Scalars.GraphQLLong).build())
                     .type(new GraphQLList(getType()))
                     .dataFetcher(environment ->  {
+                        String packageName = environment.getArgument("packageName");
+                        Integer versionCode = environment.getArgument("versionCode");
+                        Long channelId = environment.getArgument("channelId");
+                        
                         TabExample example = new TabExample();
+                        Criteria criteria = example.createCriteria();
+                        
+                        if (packageName != null) {
+                            criteria.andPackageNameEqualTo(packageName);
+                        }
+                        
+                        if (versionCode != null) {
+                            criteria.andVersionEqualTo(versionCode);
+                        }
+                        
+                        if (channelId != null) {
+                            criteria.andChannelIdEqualTo(channelId);
+                        }
+                        
                         example.setOrderByClause("sequence asc");
                         List<Tab> list = tabMapper.selectByExample(example);
                         return list;
