@@ -135,6 +135,11 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             if (isWebview != null) {
                 deviceLog.setIsWebview(Byte.valueOf(isWebview));
             }
+            
+            String sid = request.getHeader("Sid");
+            if (sid != null) {
+                deviceLog.setSid(sid);
+            }
 
             deviceLogMapper.insert(deviceLog);
 
