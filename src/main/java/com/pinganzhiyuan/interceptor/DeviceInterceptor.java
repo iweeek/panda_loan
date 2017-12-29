@@ -17,6 +17,7 @@ import com.pinganzhiyuan.mapper.LenderAccessLogMapper;
 import com.pinganzhiyuan.model.DeviceLog;
 import com.pinganzhiyuan.model.DeviceLogExample;
 import com.pinganzhiyuan.model.LenderAccessLog;
+import com.pinganzhiyuan.util.WebUtils;
 
 public class DeviceInterceptor extends HandlerInterceptorAdapter {
 
@@ -35,6 +36,8 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             MultiReadHttpServletRequest multiReadRequest = new MultiReadHttpServletRequest(
                     (HttpServletRequest) request);
             request = multiReadRequest;
+            
+            WebUtils.getHeadersInfo(request);
 
             String version = request.getHeader("Version");
             String userId = request.getHeader("User-Id");
@@ -43,7 +46,11 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             String deviceId = request.getHeader("Device-Id");
             String uri = request.getHeader("Request-Uri");
 
-            String ip = request.getRemoteAddr();
+            //如果有代理转发，则获取代理转发的地址
+            String ip = request.getHeader("x-real-ip");
+            if (ip == null) {
+                ip = request.getRemoteAddr();
+            }
 //            String uri = request.getRequestURI();
 
             if (version == null || userId == null || channelId == null || userAgent == null || deviceId == null || uri == null) {

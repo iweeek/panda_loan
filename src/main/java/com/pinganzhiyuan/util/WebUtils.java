@@ -1,5 +1,9 @@
 package com.pinganzhiyuan.util;
 
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,4 +40,21 @@ public class WebUtils {
         }  
         return null;  
     }  
+    
+    @SuppressWarnings("rawtypes")
+    public static Map<String, String> getHeadersInfo(HttpServletRequest request) {
+
+        Map<String, String> map = new HashMap<String, String>();
+
+        Enumeration headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String key = (String) headerNames.nextElement();
+            String value = request.getHeader(key);
+            System.out.println("key: " + key);
+            System.out.println("value: " + value);
+            map.put(key, value);
+        }
+
+        return map;
+    }
 }
