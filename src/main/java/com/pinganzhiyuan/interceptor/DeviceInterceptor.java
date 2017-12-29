@@ -37,7 +37,7 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
                     (HttpServletRequest) request);
             request = multiReadRequest;
             
-            WebUtils.getHeadersInfo(request);
+//            WebUtils.getHeadersInfo(request);
 
             String version = request.getHeader("Version");
             String userId = request.getHeader("User-Id");

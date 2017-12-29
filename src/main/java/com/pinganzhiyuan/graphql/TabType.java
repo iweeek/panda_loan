@@ -1,17 +1,17 @@
 package com.pinganzhiyuan.graphql;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pinganzhiyuan.mapper.BannerMapper;
-import com.pinganzhiyuan.mapper.BannerNewsMapper;
-import com.pinganzhiyuan.mapper.TabMapper;
-import com.pinganzhiyuan.mapper.TermMapper;
-import com.pinganzhiyuan.model.Tab;
-import com.pinganzhiyuan.model.TabExample;
-import com.pinganzhiyuan.model.TabExample.Criteria;
+import com.pinganzhiyuan.mapper.ClientModuleMapper;
+import com.pinganzhiyuan.mapper.TabModuleMappingMapper;
+import com.pinganzhiyuan.model.TabModuleMapping;
+import com.pinganzhiyuan.model.ClientModule;
+import com.pinganzhiyuan.model.TabModuleMappingExample;
+import com.pinganzhiyuan.model.TabModuleMappingExample.Criteria;
 
 import graphql.Scalars;
 import graphql.schema.GraphQLArgument;
@@ -25,7 +25,8 @@ public class TabType {
     private static GraphQLFieldDefinition singleQueryField;
     private static GraphQLFieldDefinition listQueryField;
     
-    private static TabMapper tabMapper;
+    private static ClientModuleMapper clientModuleMapper;
+    private static TabModuleMappingMapper tabModuleMappingMapper;
 
     private static GraphQLObjectType type;
    
@@ -86,7 +87,7 @@ public class TabType {
                         Integer versionCode = environment.getArgument("versionCode");
                         Long channelId = environment.getArgument("channelId");
                         
-                        TabExample example = new TabExample();
+                        TabModuleMappingExample example = new TabModuleMappingExample();
                         Criteria criteria = example.createCriteria();
                         
                         if (packageName != null) {
@@ -102,7 +103,13 @@ public class TabType {
                         }
                         
                         example.setOrderByClause("sequence asc");
-                        List<Tab> list = tabMapper.selectByExample(example);
+                        List<TabModuleMapping> mappingList = tabModuleMappingMapper.selectByExample(example);
+                        
+                        List<ClientModule> list = new ArrayList<ClientModule>();
+                        for (TabModuleMapping mapping : mappingList) {
+                            ClientModule module = clientModuleMapper.selectByPrimaryKey(mapping.getModuleId());
+                            list.add(module);
+                        }
                         return list;
                     } ).build();
         }
@@ -110,8 +117,13 @@ public class TabType {
     }
     
     @Autowired(required = true)
-    public void setTabMapper(TabMapper tabMapper) {
-        TabType.tabMapper = tabMapper;
+    public void setClientModuleMapper(ClientModuleMapper clientModuleMapper) {
+        TabType.clientModuleMapper = clientModuleMapper;
+    }
+    
+    @Autowired(required = true)
+    public void setTabModuleMappingMapper(TabModuleMappingMapper tabModuleMappingMapper) {
+        TabType.tabModuleMappingMapper = tabModuleMappingMapper;
     }
     
 }

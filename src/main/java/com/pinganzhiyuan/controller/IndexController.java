@@ -24,7 +24,11 @@ public class IndexController {
         
         String deviceId = request.getHeader("Device-Id");
         String userId = request.getHeader("User-Id");
-        String pId = request.getHeader("Pid");
+        String pId = request.getParameter("pid");
+        if (pId == null) {
+            pId = request.getHeader("Pid");
+        }
+        
         String redirectUri = request.getParameter("redirect");
         if (redirectUri == null) {
         } else {

@@ -185,7 +185,13 @@
       <ignoreColumn column="updated_at"/>
     </table>          
     
-    <table schema="panda_loan" tableName="tab" domainObjectName ="Tab" >
+    <table schema="panda_loan" tableName="client_module" domainObjectName ="ClientModule" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>  
+    
+    <table schema="panda_loan" tableName="tab_module_mapping" domainObjectName ="TabModuleMapping" >
       <generatedKey column="id" sqlStatement="MySql" identity="true" />
       <ignoreColumn column="created_at"/>
       <ignoreColumn column="updated_at"/>
