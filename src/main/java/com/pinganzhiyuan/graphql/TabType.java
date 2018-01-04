@@ -38,6 +38,10 @@ public class TabType {
                             .newFieldDefinition().name("id")
                             .description("唯一主键")
                             .type(Scalars.GraphQLLong)
+                            .dataFetcher(environment -> {
+                                TabModuleMapping mapping = environment.getSource();
+                                return mapping.getModuleId();
+                            })
                             .build())
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("name")
@@ -104,13 +108,13 @@ public class TabType {
                         
                         example.setOrderByClause("sequence asc");
                         List<TabModuleMapping> mappingList = tabModuleMappingMapper.selectByExample(example);
-                        
-                        List<ClientModule> list = new ArrayList<ClientModule>();
-                        for (TabModuleMapping mapping : mappingList) {
-                            ClientModule module = clientModuleMapper.selectByPrimaryKey(mapping.getModuleId());
-                            list.add(module);
-                        }
-                        return list;
+                        return mappingList;
+//                        List<ClientModule> list = new ArrayList<ClientModule>();
+//                        for (TabModuleMapping mapping : mappingList) {
+//                            ClientModule module = clientModuleMapper.selectByPrimaryKey(mapping.getModuleId());
+//                            list.add(module);
+//                        }
+//                        return list;
                     } ).build();
         }
         return listQueryField;
