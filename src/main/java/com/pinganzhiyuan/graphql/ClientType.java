@@ -40,6 +40,11 @@ public class ClientType {
                             .newFieldDefinition().name("id")
                             .description("唯一主键")
                             .type(Scalars.GraphQLLong)
+                            .dataFetcher(environment -> {
+                                //为了兼容安卓客户端的问题
+                                Client client = environment.getSource();
+                                return client.getUserId();
+                            })
                             .build())
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("userId")
