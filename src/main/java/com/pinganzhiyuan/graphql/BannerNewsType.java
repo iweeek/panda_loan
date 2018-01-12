@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pinganzhiyuan.mapper.BannerNewsMapper;
+import com.pinganzhiyuan.model.BannerNews;
+import com.pinganzhiyuan.model.Client;
+
 import graphql.Scalars;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLList;
@@ -28,6 +31,22 @@ public class BannerNewsType {
                             .newFieldDefinition().name("id")
                             .description("唯一主键")
                             .type(Scalars.GraphQLLong)
+                            .dataFetcher(environment -> {
+                                //为了兼容安卓客户端的问题
+                                BannerNews bannerNews = environment.getSource();
+                                String url = bannerNews.getUrl();
+                                String arr[] = url.substring(url.indexOf("?") + 1).split("&");
+                                String pid = "0";
+                                for (int i = 0; i < arr.length; i++) {
+                                    if (arr[i].contains("pid")) {
+                                        String pidArr[] = arr[i].split("=");
+                                        pid = pidArr[1];
+                                        break;
+                                    }
+                                }
+                                
+                                return Long.valueOf(pid);
+                             })
                             .build())
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("description")
