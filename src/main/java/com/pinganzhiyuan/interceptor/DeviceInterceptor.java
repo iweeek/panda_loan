@@ -25,7 +25,7 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
     private DeviceLogMapper deviceLogMapper;
-    
+
     @Autowired
     private LenderAccessLogMapper lenderAccessLogMapper;
 
@@ -33,11 +33,14 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
 
-            MultiReadHttpServletRequest multiReadRequest = new MultiReadHttpServletRequest(
-                    (HttpServletRequest) request);
-            request = multiReadRequest;
-            
-//            WebUtils.getHeadersInfo(request);
+        MultiReadHttpServletRequest multiReadRequest = new MultiReadHttpServletRequest((HttpServletRequest) request);
+        request = multiReadRequest;
+
+        if (request.getMethod().equals("OPTIONS")) {
+
+        } else {
+
+            // WebUtils.getHeadersInfo(request);
 
             String version = request.getHeader("Version");
             String userId = request.getHeader("User-Id");
@@ -46,31 +49,32 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             String deviceId = request.getHeader("Device-Id");
             String uri = request.getHeader("Request-Uri");
 
-            //如果有代理转发，则获取代理转发的地址
+            // 如果有代理转发，则获取代理转发的地址
             String ip = request.getHeader("x-real-ip");
             if (ip == null) {
                 ip = request.getRemoteAddr();
             }
-//            String uri = request.getRequestURI();
+            // String uri = request.getRequestURI();
 
-            if (version == null || userId == null || channelId == null || userAgent == null || deviceId == null || uri == null) {
-                    return false;
+            if (version == null || userId == null || channelId == null || userAgent == null || deviceId == null
+                    || uri == null) {
+                return false;
             }
-            
-//            String redirectUri = request.getParameter("redirect");
-//            if (redirectUri == null) {
-//            } else {
-//                redirectUri = URLDecoder.decode(redirectUri);
-//                try {
-//                    LenderAccessLog log = new LenderAccessLog();
-//                    
-//                    log.setLenderUrl(redirectUri);
-//                    lenderAccessLogMapper.insert(log);
-//                    response.sendRedirect(redirectUri);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
+
+            // String redirectUri = request.getParameter("redirect");
+            // if (redirectUri == null) {
+            // } else {
+            // redirectUri = URLDecoder.decode(redirectUri);
+            // try {
+            // LenderAccessLog log = new LenderAccessLog();
+            //
+            // log.setLenderUrl(redirectUri);
+            // lenderAccessLogMapper.insert(log);
+            // response.sendRedirect(redirectUri);
+            // } catch (IOException e) {
+            // e.printStackTrace();
+            // }
+            // }
 
             // InputStream is = null;
             // String body = "";
@@ -93,7 +97,7 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             if (strPageId == null) {
                 strPageId = "0";
             }
-            
+
             String packageName = request.getHeader("Package-Name");
             if (packageName == null) {
                 packageName = "";
@@ -125,7 +129,7 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             if (geoInfo != null) {
                 deviceLog.setGeoInfo(geoInfo);
             }
-            
+
             String pId = request.getParameter("pid");
             if (pId == null) {
                 pId = request.getHeader("Pid");
@@ -133,18 +137,19 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             if (pId != null) {
                 deviceLog.setpId(Long.valueOf(pId));
             }
-            
+
             String isWebview = request.getHeader("Is-Webview");
             if (isWebview != null) {
                 deviceLog.setIsWebview(Byte.valueOf(isWebview));
             }
-            
+
             String sid = request.getHeader("Sid");
             if (sid != null) {
                 deviceLog.setSid(sid);
             }
 
             deviceLogMapper.insert(deviceLog);
+        }
 
         return super.preHandle(request, response, handler);
     }
