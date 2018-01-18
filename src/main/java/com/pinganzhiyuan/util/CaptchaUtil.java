@@ -8,8 +8,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class CaptchaUtil {
 
-    static char[] hybridChars = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
-            'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+    static char[] hybridChars = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q',
+            'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '2', '3', '4', '5', '6', '7', '8', '9' };
 
     static char[] numChars = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
@@ -62,11 +62,14 @@ public class CaptchaUtil {
         int maxDegree = 26; // 最大旋转度数
 
         // 背景颜色
-        Color bkColor = Color.WHITE;
+//        Color bkColor = Color.gray;
+        Color bkColor = new Color(170, 170, 170);
         // 验证码的颜色
-        Color[] catchaColor = { Color.MAGENTA, Color.BLACK, Color.BLUE, Color.CYAN, Color.GREEN, Color.ORANGE,
-                Color.PINK };
+//        Color[] catchaColor = { Color.MAGENTA, Color.BLACK, Color.BLUE, Color.CYAN, Color.GREEN, Color.ORANGE,
+//                Color.PINK };
 
+        Color[] catchaColor = { Color.BLACK };
+        
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = image.createGraphics();
 
@@ -81,13 +84,13 @@ public class CaptchaUtil {
         // 画干扰字母、数字
         int dSize = fontSize / 3; // 调整分母大小以调整干扰字符大小
         Font font = new Font("Fixedsys", Font.PLAIN, dSize);
-        g.setFont(font);
-        int dNumber = width * height / dSize / dSize;// 根据面积计算干扰字母的个数
-        for (int i = 0; i < dNumber; i++) {
-            char dCode = hybridChars[r.nextInt(hybridChars.length)];
-            g.setColor(new Color(r.nextInt(255), r.nextInt(255), r.nextInt(255)));
-            g.drawString(String.valueOf(dCode), r.nextInt(width), r.nextInt(height));
-        }
+//        g.setFont(font);
+//        int dNumber = width * height / dSize / dSize;// 根据面积计算干扰字母的个数
+//        for (int i = 0; i < dNumber; i++) {
+//            char dCode = hybridChars[r.nextInt(hybridChars.length)];
+//            g.setColor(new Color(r.nextInt(255), r.nextInt(255), r.nextInt(255)));
+//            g.drawString(String.valueOf(dCode), r.nextInt(width), r.nextInt(height));
+//        }
 
         // 开始画验证码：
 
