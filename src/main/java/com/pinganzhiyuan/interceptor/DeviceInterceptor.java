@@ -94,6 +94,8 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
                 List<LandingChannel> landingChannel = landingChannelMapper.selectByExample(example);
                 if (landingChannel != null && landingChannel.size() != 0) {
                     landingDeviceLog.setLandingChannelId(landingChannel.get(0).getId());
+                } else {
+                    landingDeviceLog.setLandingChannelId(0l);
                 }
                 
                 landingDeviceLogMapper.insert(landingDeviceLog);
@@ -248,8 +250,10 @@ User user = null;
             channelExample.createCriteria().andChannelUidEqualTo(landingChannelUid);
             List<LandingChannel> landingChannel = 
                     landingChannelMapper.selectByExample(channelExample);
-            if (landingChannel != null) {
+            if (landingChannel != null && landingChannel.size() != 0) {
                 landingDeviceLog.setLandingChannelId(landingChannel.get(0).getId());
+            } else {
+                landingDeviceLog.setLandingChannelId(0l);
             }
             
             landingDeviceLogMapper.insert(landingDeviceLog);
