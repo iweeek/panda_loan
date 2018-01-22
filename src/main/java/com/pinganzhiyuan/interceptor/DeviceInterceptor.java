@@ -102,6 +102,12 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             if (packageName == null) {
                 packageName = "";
             }
+            
+            String jPushId = request.getHeader("Jpush-Id");
+            if (jPushId == null) {
+                jPushId = "";
+            }
+            
             int pageId = Integer.valueOf(strPageId);
             DeviceLog deviceLog = new DeviceLog();
             deviceLog.setVersion(Integer.valueOf(version));
@@ -113,6 +119,7 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             deviceLog.setPackageName(packageName);
             deviceLog.setPageId(pageId);
             deviceLog.setDeviceId(deviceId);
+            deviceLog.setJpushId(jPushId);
 
             String ll = request.getHeader("Long-Lat");
             if (ll != null) {
