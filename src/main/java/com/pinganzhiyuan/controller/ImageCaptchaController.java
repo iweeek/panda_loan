@@ -30,7 +30,7 @@ public class ImageCaptchaController {
     public void create(HttpServletResponse response) {
         try {
             // 把校验码转为图像
-            Captcha captcha = captchaService.genCaptcha(1);
+            Captcha captcha = captchaService.genCaptcha(2);
             BufferedImage image = CaptchaUtil.genCaptchaImg(captcha.getCaptcha());
 
             response.setContentType("image/jpeg");
