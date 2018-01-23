@@ -195,6 +195,19 @@
       <generatedKey column="id" sqlStatement="MySql" identity="true" />
       <ignoreColumn column="created_at"/>
       <ignoreColumn column="updated_at"/>
-    </table>                                    
+    </table>
+    
+    <table schema="panda_loan" tableName="landing_channel" domainObjectName ="LandingChannel" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
+    
+    <table schema="panda_loan" tableName="landing_device_log" domainObjectName ="LandingDeviceLog" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
+    
   </context>
 </generatorConfiguration>
