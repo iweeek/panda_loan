@@ -75,34 +75,8 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             String landingChannelUid = request.getHeader("Landing-Channel-Uid");
             
             // 区分是来自客户端，还是其他投放渠道 && 不包括登录
-            if (landingChannelUid != null && !request.getRequestURI().contains("/tokens")) {
-                LandingDeviceLog landingDeviceLog = new LandingDeviceLog();
-                landingDeviceLog.setUserAgent(userAgent);
-                landingDeviceLog.setLandingChannelUid(landingChannelUid);
-                
-                StringBuffer url = request.getRequestURL();
-                landingDeviceLog.setUrl(url.toString());
-                
-                String sid = request.getHeader("Sid");
-                landingDeviceLog.setSid(sid);
-                
-                String ip = request.getRemoteAddr();
-                landingDeviceLog.setIp(ip);
-                
-                LandingChannelExample example = new LandingChannelExample();
-                example.createCriteria().andChannelUidEqualTo(landingChannelUid);
-                List<LandingChannel> landingChannel = landingChannelMapper.selectByExample(example);
-                if (landingChannel != null && landingChannel.size() != 0) {
-                    landingDeviceLog.setLandingChannelId(landingChannel.get(0).getId());
-                } else {
-                    landingDeviceLog.setLandingChannelId(0l);
-                }
-                
-                landingDeviceLogMapper.insert(landingDeviceLog);
-                
-            } 
-            if (landingChannelUid == null) {   
-                // 如果有代理转发，则获取代理转发的地址
+            if (landingChannelUid == null) {
+             // 如果有代理转发，则获取代理转发的地址
                 String ip = request.getHeader("x-real-ip");
                 if (ip == null) {
                     ip = request.getRemoteAddr();
@@ -202,7 +176,34 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
                 }
     
                 deviceLogMapper.insert(deviceLog);
-            } 
+            } else {
+                if (!request.getRequestURI().contains("/tokens")) {
+                    LandingDeviceLog landingDeviceLog = new LandingDeviceLog();
+                    landingDeviceLog.setUserAgent(userAgent);
+                    landingDeviceLog.setLandingChannelUid(landingChannelUid);
+                    
+                    StringBuffer url = request.getRequestURL();
+                    landingDeviceLog.setUrl(url.toString());
+                    
+                    String sid = request.getHeader("Sid");
+                    landingDeviceLog.setSid(sid);
+                    
+                    String ip = request.getRemoteAddr();
+                    landingDeviceLog.setIp(ip);
+                    
+                    LandingChannelExample example = new LandingChannelExample();
+                    example.createCriteria().andChannelUidEqualTo(landingChannelUid);
+                    List<LandingChannel> landingChannel = landingChannelMapper.selectByExample(example);
+                    if (landingChannel != null && landingChannel.size() != 0) {
+                        landingDeviceLog.setLandingChannelId(landingChannel.get(0).getId());
+                    } else {
+                        landingDeviceLog.setLandingChannelId(0l);
+                    }
+                    
+                    landingDeviceLogMapper.insert(landingDeviceLog);
+                    
+                }
+            }
         }
 
         return super.preHandle(request, response, handler);
@@ -259,58 +260,7 @@ User user = null;
             landingDeviceLogMapper.insert(landingDeviceLog);
         }
         
-        
         super.postHandle(request, response, handler, modelAndView);
     }
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
-            throws Exception {
-//        User user = null;
-//        
-//        String landingChannelUid = request.getHeader("Landing-Channel-Uid");
-//        
-//        String username = request.getParameter("username");
-//        
-//        // 上一次请求是来自其他投放渠道 && 是请求登录
-//        if (landingChannelUid != null && request.getRequestURI().contains("/tokens")) {
-//            LandingDeviceLog landingDeviceLog = new LandingDeviceLog();
-//            
-//            if (response.getStatus() == 200) {
-//                UserExample example = new UserExample();
-//                example.createCriteria().andUsernameEqualTo(username);
-//                List<User> users = userMapper.selectByExample(example);
-//                if (users != null) {
-//                    user = users.get(0);
-//                    landingDeviceLog.setUserId(user.getId());
-//                }
-//            }
-//            
-//            
-//            landingDeviceLog.setLandingChannelUid(landingChannelUid);
-//            
-//            String userAgent = request.getHeader("User-Agent");
-//            landingDeviceLog.setUserAgent(userAgent);
-//            
-//            StringBuffer url = request.getRequestURL();
-//            landingDeviceLog.setUrl(url.toString());
-//            
-//            String sid = request.getHeader("Sid");
-//            landingDeviceLog.setSid(sid);
-//            
-//            String ip = request.getRemoteAddr();
-//            landingDeviceLog.setIp(ip);
-//            
-//            LandingChannelExample channelExample = new LandingChannelExample();
-//            channelExample.createCriteria().andChannelUidEqualTo(landingChannelUid);
-//            List<LandingChannel> landingChannel = 
-//                    landingChannelMapper.selectByExample(channelExample);
-//            if (landingChannel != null) {
-//                landingDeviceLog.setLandingChannelId(landingChannel.get(0).getId());
-//            }
-//            
-//            landingDeviceLogMapper.insert(landingDeviceLog);
-//        }
-        
-        super.afterCompletion(request, response, handler, ex);
-    }
+    
 }
