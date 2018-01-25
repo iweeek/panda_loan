@@ -95,4 +95,9 @@ public class TokenController {
             return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(resBody);
         }
     }
+    
+    @RequestMapping(value = { "/landingPage" }, method = RequestMethod.POST)
+    public ResponseEntity<?> landingPage() {
+        return ResponseEntity.status(HttpServletResponse.SC_OK).body(null);
+    }
 }
