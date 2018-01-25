@@ -97,7 +97,7 @@ public class TokenController {
     }
     
     @RequestMapping(value = { "/landingPage" }, method = RequestMethod.POST)
-    public ResponseEntity<?> emptyRequest() {
+    public ResponseEntity<?> landingPage() {
         return ResponseEntity.status(HttpServletResponse.SC_OK).body(null);
     }
 }
