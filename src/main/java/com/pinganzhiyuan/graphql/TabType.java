@@ -54,6 +54,11 @@ public class TabType {
                             .type(Scalars.GraphQLString)
                             .build())
                     .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("schemeUrl")
+                            .description("url scheme的地址")
+                            .type(Scalars.GraphQLString)
+                            .build())
+                    .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("sequence")
                             .description("顺序")
                             .type(Scalars.GraphQLInt)
