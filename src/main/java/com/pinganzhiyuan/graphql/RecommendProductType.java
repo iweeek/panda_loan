@@ -1,8 +1,12 @@
 package com.pinganzhiyuan.graphql;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.ibatis.mapping.Environment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -77,6 +81,35 @@ public class RecommendProductType {
                             .newFieldDefinition().name("secondTags")
                             .description("第二行标签")
                             .type(Scalars.GraphQLString)
+                            .build())
+                    // 2018年01月29日 新增maxTerm、dayRate
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("maxTerm")
+                            .description("贷款期限上限")
+                            .type(Scalars.GraphQLInt)
+                            .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("minTerm")
+                            .description("贷款期限下限")
+                            .type(Scalars.GraphQLInt)
+                            .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("dayRate")
+                            .description("日利率")
+                            .type(Scalars.GraphQLString)
+                            .dataFetcher(environment -> {
+                                Product product = environment.getSource();
+                                String secondTags = product.getSecondTags();
+                                if (secondTags != null) {
+                                    Pattern p = Pattern.compile("日利率(.*?)\\%起");
+                                    Matcher m = p.matcher(secondTags);
+                                    if (m.find()) {
+                                        return m.group(1);
+                                    }
+                                    return "0";
+                                }
+                                return "0";
+                             })
                             .build())
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("description")
