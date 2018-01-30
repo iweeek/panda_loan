@@ -13,6 +13,7 @@ import com.pinganzhiyuan.graphql.GuaranteeType;
 import com.pinganzhiyuan.graphql.LoanAmountRangeType;
 import com.pinganzhiyuan.graphql.MidAdType;
 import com.pinganzhiyuan.graphql.MidNavType;
+import com.pinganzhiyuan.graphql.NewRecommendProductType;
 import com.pinganzhiyuan.graphql.TopNavType;
 import com.pinganzhiyuan.graphql.TopRightEntyType;
 import com.pinganzhiyuan.graphql.RecommendProductType;
@@ -43,6 +44,7 @@ public class GraphQLServiceImpl implements GraphQLService {
 		GraphQLObjectType queryType = GraphQLObjectType.newObject()
                 .name("root")
                 .field(RecommendProductType.getSearchListField())
+                .field(NewRecommendProductType.getSearchListField())
                 .field(CreditAuthType.getListQueryField())
                 .field(BannerType.getSingleQueryField())
                 .field(TopNavType.getListQueryField())
