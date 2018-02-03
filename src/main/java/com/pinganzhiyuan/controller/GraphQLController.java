@@ -2,11 +2,14 @@ package com.pinganzhiyuan.controller;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -55,7 +58,29 @@ public class GraphQLController {
      */
     @ApiOperation(value = "GraphQL查询入口", notes = "具体使用请参考本项目提供的GraphQL调试器，此处不再介绍")
     @RequestMapping(value = "/query", method = RequestMethod.POST)
-    public ResponseEntity<?> query(@RequestParam String query) {
+    public ResponseEntity<?> query(@RequestParam String query, HttpServletRequest request,
+                                @RequestHeader("Package-Name") String packageName,
+                                @RequestHeader("Channel-Id") String channelId) {
+        String parameter = request.getHeader("Package-Name");
+        String header = request.getHeader("Channel-Id");
+        
+        if (query.contains("topNavs{")) {
+            String[] topNavs = query.split("topNavs");
+            query = topNavs[0] + "topNavs(packageName:\"" + packageName + "\", " + "channelId: " + channelId + ")" + topNavs[1];
+        }
+        if (query.contains("midAds{")) {
+            String[] midAds = query.split("midAds");
+            query = midAds[0] + "midAds(packageName: \"" + packageName + "\", " + "channelId: " + channelId + ")" + midAds[1];
+        }
+        if (query.contains("midNavs{")) {
+            String[] midNavs = query.split("midNavs");
+            query = midNavs[0] + "midNavs(packageName: \"" + packageName + "\", " + "channelId: " + channelId + ")" + midNavs[1];
+        }
+        if (query.contains("topRightEntry{")) {
+            String[] topRightEntry = query.split("topRightEntry");
+            query = topRightEntry[0] + "topRightEntry(packageName: \"" + packageName + "\", " + "channelId: " + channelId + ")" + topRightEntry[1];
+        }
+        
         logger.debug("query query: " + query);
         System.out.println("query query: " + query);
         ExecutionResult result = graphQLService.query(query);

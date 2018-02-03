@@ -174,7 +174,7 @@ public class RecommendProductType {
                     .name("recommendProducts")
                     .description("获取产品列表")
                     .type(new GraphQLList(getType()))
-                    .dataFetcher(environment ->  {
+                    .dataFetcher(environment -> {
 //                        String guaranteeIds = environment.getArgument("guaranteeIds");
                         Long guaranteeId = environment.getArgument("guaranteeId");
                         List<GuaranteeTypeMapping> guaranteeTypeMappingList = null;

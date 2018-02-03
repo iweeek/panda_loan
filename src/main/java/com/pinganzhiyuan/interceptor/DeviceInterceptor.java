@@ -72,6 +72,7 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             String channelId = request.getHeader("Channel-Id");
             String deviceId = request.getHeader("Device-Id");
             String uri = request.getHeader("Request-Uri");
+//            String packageName = request.getHeader("Package-Name");
             
             String landingChannelUid = request.getHeader("Landing-Channel-Uid");
             
