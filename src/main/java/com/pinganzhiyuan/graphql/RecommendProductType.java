@@ -1,5 +1,7 @@
 package com.pinganzhiyuan.graphql;
 
+import static org.hamcrest.CoreMatchers.nullValue;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,17 +13,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.github.pagehelper.PageHelper;
+import com.pinganzhiyuan.mapper.ColumnMapper;
 import com.pinganzhiyuan.mapper.GuaranteeProductMappingMapper;
 import com.pinganzhiyuan.mapper.GuaranteeTypeMappingMapper;
 import com.pinganzhiyuan.mapper.LoanAmountRangeMapper;
+import com.pinganzhiyuan.mapper.ProductColumnMappingMapper;
 import com.pinganzhiyuan.mapper.ProductMapper;
 import com.pinganzhiyuan.mapper.ProductTypeMappingMapper;
 import com.pinganzhiyuan.mapper.SelectOrderMapper;
+import com.pinganzhiyuan.model.Column;
+import com.pinganzhiyuan.model.ColumnExample;
 import com.pinganzhiyuan.model.GuaranteeProductMapping;
 import com.pinganzhiyuan.model.GuaranteeProductMappingExample;
 import com.pinganzhiyuan.model.GuaranteeTypeMapping;
 import com.pinganzhiyuan.model.GuaranteeTypeMappingExample;
 import com.pinganzhiyuan.model.Product;
+import com.pinganzhiyuan.model.ProductColumnMapping;
+import com.pinganzhiyuan.model.ProductColumnMappingExample;
 import com.pinganzhiyuan.model.ProductExample;
 import com.pinganzhiyuan.model.ProductExample.Criteria;
 import com.pinganzhiyuan.model.ProductTypeMappingExample;
@@ -49,7 +57,10 @@ public class RecommendProductType {
     private static ProductTypeMappingMapper productTypeMappingMapper;
     private static SelectOrderMapper selectOrderMapper;
     private static LoanAmountRangeMapper loanAmountRangeMapper;
-
+    
+    private static ColumnMapper columnMapper;
+    private static ProductColumnMappingMapper productColumnMappingMapper;
+    
     private static GraphQLObjectType type;
    
 
@@ -200,20 +211,56 @@ public class RecommendProductType {
                             List<GuaranteeProductMapping> list = guaranteeProductMappingMapper.selectByExample(example);
                             for (GuaranteeProductMapping mapping : list) {
                               productIdList.add(mapping.getProductId());
-                          }
+                            }
                         }
                         
+                        // 可以单独处理top_nav
                         Long productTypeId = environment.getArgument("productTypeId");
                         if (productTypeId != null) {
-                            ProductTypeMappingExample example = new ProductTypeMappingExample();
-                            example.createCriteria().andTypeIdEqualTo(productTypeId);
+                            Column column = columnMapper.selectByPrimaryKey(productTypeId);
+                            System.out.println("column: " + column);
                             
-                            List<ProductTypeMapping> list = productTypeMappingMapper.selectByExample(example);
-                            if (list.size() > 0) {
-                                for (ProductTypeMapping mapping : list) {
+                            ProductColumnMappingExample productColumnMappingExample = new ProductColumnMappingExample();
+                            productColumnMappingExample.createCriteria().andColumnKeyEqualTo(column.getColumnKey());
+                            List<ProductColumnMapping> productColumnMappings = 
+                                    productColumnMappingMapper.selectByExample(productColumnMappingExample);
+
+                            if (productColumnMappings.size() > 0) {
+                                for (ProductColumnMapping mapping : productColumnMappings) {
                                   productIdList.add(mapping.getProductId());
-                              }
+                                }
                             }
+                            
+                            System.out.println("productIdList：" + productIdList);
+                            
+                            if (productIdList.size() == 0) {
+                                return null;
+                            }
+                            
+                            ProductExample example = new ProductExample();
+                            Criteria criteria = example.createCriteria();
+                            criteria.andIsPublishedEqualTo(true);
+                            
+                            if (productIdList.size() != 0) {
+                                criteria.andIdIn(productIdList);
+                            }
+                            
+                            example.setOrderByClause(" weight desc ");
+                            List<Product> list = productMapper.selectByExample(example);
+                            
+                            return list;
+                            
+                           
+//                          List<ProductTypeMapping> list = productTypeMappingMapper.selectByExample(example);
+//                            ProductTypeMappingExample example = new ProductTypeMappingExample();
+//                            example.createCriteria().andTypeIdEqualTo(productTypeId);
+//                            
+//                            List<ProductTypeMapping> list = productTypeMappingMapper.selectByExample(example);
+//                            if (list.size() > 0) {
+//                                for (ProductTypeMapping mapping : list) {
+//                                  productIdList.add(mapping.getProductId());
+//                              }
+//                            }
                         }
                         
                         //取出抵押Id列表
@@ -341,5 +388,14 @@ public class RecommendProductType {
     @Autowired(required = true)
     public void setGuaranteeProductMappingMapper(GuaranteeProductMappingMapper guaranteeProductMappingMapper) {
         RecommendProductType.guaranteeProductMappingMapper = guaranteeProductMappingMapper;
+    }
+    
+    @Autowired(required = true)
+    public void setProductColumnMappingMapper(ProductColumnMappingMapper productColumnMappingMapper) {
+        RecommendProductType.productColumnMappingMapper = productColumnMappingMapper;
+    }
+    @Autowired(required = true)
+    public void setColumnMapper(ColumnMapper columnMapper) {
+        RecommendProductType.columnMapper = columnMapper;
     }
 }

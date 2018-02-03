@@ -186,4 +186,11 @@ public class Column {
     public void setMax(Integer max) {
         this.max = max;
     }
+
+    @Override
+    public String toString() {
+        return "Column [id=" + id + ", columnKey=" + columnKey + ", name=" + name + ", title=" + title + ", subtitle="
+                + subtitle + ", url=" + url + ", iconUrl=" + iconUrl + ", max=" + max + "]";
+    }
+    
 }
