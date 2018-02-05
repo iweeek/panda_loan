@@ -21,6 +21,7 @@ import com.pinganzhiyuan.mapper.ProductColumnMappingMapper;
 import com.pinganzhiyuan.mapper.ProductMapper;
 import com.pinganzhiyuan.mapper.ProductTypeMappingMapper;
 import com.pinganzhiyuan.mapper.SelectOrderMapper;
+import com.pinganzhiyuan.mapper.TermMapper;
 import com.pinganzhiyuan.model.Column;
 import com.pinganzhiyuan.model.ColumnExample;
 import com.pinganzhiyuan.model.GuaranteeProductMapping;
@@ -35,6 +36,8 @@ import com.pinganzhiyuan.model.ProductExample.Criteria;
 import com.pinganzhiyuan.model.ProductTypeMappingExample;
 import com.pinganzhiyuan.model.SelectOrder;
 import com.pinganzhiyuan.model.SelectOrderExample;
+import com.pinganzhiyuan.model.Term;
+import com.pinganzhiyuan.model.TermExample;
 import com.pinganzhiyuan.model.LoanAmountRange;
 import com.pinganzhiyuan.model.LoanAmountRangeExample;
 import com.pinganzhiyuan.model.ProductTypeMapping;
@@ -57,6 +60,7 @@ public class RecommendProductType {
     private static ProductTypeMappingMapper productTypeMappingMapper;
     private static SelectOrderMapper selectOrderMapper;
     private static LoanAmountRangeMapper loanAmountRangeMapper;
+    private static TermMapper termMapper;
     
     private static ColumnMapper columnMapper;
     private static ProductColumnMappingMapper productColumnMappingMapper;
@@ -294,7 +298,16 @@ public class RecommendProductType {
                             }
                         }
                         
-                        Integer term = environment.getArgument("term");
+                        Term term = null;
+                        Integer termId = environment.getArgument("term");
+                        if (termId != null && termId != 0) {
+                            TermExample example = new TermExample();
+                            example.createCriteria().andIdEqualTo(Long.valueOf(termId));
+                            List<Term> list = termMapper.selectByExample(example);
+                            if (list.size() != 0) {
+                                term = list.get(0);
+                            }
+                        }
                         
                         String selectOrder = null;
                         Long selectOrderId = environment.getArgument("selectOrderId");
@@ -322,12 +335,19 @@ public class RecommendProductType {
                             criteria.andIdIn(productIdList);
                         }
                         
-                        if (term != null && term != 0) {
-                            criteria.andMinTermLessThanOrEqualTo(term).andMaxTermGreaterThanOrEqualTo(term);
+                        if (term != null) {
+                            if (!term.getDuration().equals("0")) {
+                                criteria
+                                    .andMinTermLessThanOrEqualTo(Integer.valueOf(term.getDuration()))
+                                    .andMaxTermGreaterThanOrEqualTo(Integer.valueOf(term.getDuration()));
+                            }
+                            
                         }
                         
                         if (loanAmountRange != null) {
-                            criteria.andMinAmountLessThanOrEqualTo(loanAmountRange.getMinAmount()).andMaxAmountGreaterThanOrEqualTo(loanAmountRange.getMaxAmount());
+                            if (!(loanAmountRange.getMinAmount() == 0 && loanAmountRange.getMaxAmount() == 0)) {
+                                criteria.andMinAmountLessThanOrEqualTo(loanAmountRange.getMinAmount()).andMaxAmountGreaterThanOrEqualTo(loanAmountRange.getMaxAmount());
+                            }
                         }
                         
                         if (typeId != null) {
@@ -397,5 +417,9 @@ public class RecommendProductType {
     @Autowired(required = true)
     public void setColumnMapper(ColumnMapper columnMapper) {
         RecommendProductType.columnMapper = columnMapper;
+    }
+    @Autowired(required = true)
+    public void setTermMapper(TermMapper termMapper) {
+        RecommendProductType.termMapper = termMapper;
     }
 }
