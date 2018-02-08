@@ -9,12 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.github.pagehelper.PageHelper;
+import com.pinganzhiyuan.mapper.AppClientMapper;
 import com.pinganzhiyuan.mapper.GuaranteeProductMappingMapper;
 import com.pinganzhiyuan.mapper.GuaranteeTypeMappingMapper;
 import com.pinganzhiyuan.mapper.LoanAmountRangeMapper;
 import com.pinganzhiyuan.mapper.ProductMapper;
 import com.pinganzhiyuan.mapper.ProductTypeMappingMapper;
 import com.pinganzhiyuan.mapper.SelectOrderMapper;
+import com.pinganzhiyuan.model.AppClient;
+import com.pinganzhiyuan.model.AppClientExample;
 import com.pinganzhiyuan.model.GuaranteeProductMapping;
 import com.pinganzhiyuan.model.GuaranteeProductMappingExample;
 import com.pinganzhiyuan.model.GuaranteeTypeMapping;
@@ -46,7 +49,8 @@ public class NewRecommendProductType {
     private static ProductTypeMappingMapper productTypeMappingMapper;
     private static SelectOrderMapper selectOrderMapper;
     private static LoanAmountRangeMapper loanAmountRangeMapper;
-
+    private static AppClientMapper appClientMapper;
+    
     private static GraphQLObjectType type;
    
 
@@ -168,10 +172,14 @@ public class NewRecommendProductType {
                     .argument(GraphQLArgument.newArgument().name("productTypeId").type(Scalars.GraphQLLong).build())
                     .argument(GraphQLArgument.newArgument().name("pageNumber").type(Scalars.GraphQLInt).build())
                     .argument(GraphQLArgument.newArgument().name("pageSize").type(Scalars.GraphQLInt).build())
+                    .argument(GraphQLArgument.newArgument().name("packageName").type(Scalars.GraphQLString).build())
+                    .argument(GraphQLArgument.newArgument().name("channelId").type(Scalars.GraphQLLong).build())
                     .name("recommendProductsNew")
                     .description("获取产品列表")
                     .type(new GraphQLList(getType()))
                     .dataFetcher(environment ->  {
+                        // 2018年02月07日16:34:00 注释
+                        /*
 //                        String guaranteeIds = environment.getArgument("guaranteeIds");
                         Long guaranteeId = environment.getArgument("guaranteeId");
                         List<GuaranteeTypeMapping> guaranteeTypeMappingList = null;
@@ -264,6 +272,7 @@ public class NewRecommendProductType {
                         
                         Integer typeId = environment.getArgument("typeId");
                         
+                        
                         ProductExample example = new ProductExample();
                         Criteria criteria = example.createCriteria();
                         criteria.andIsPublishedEqualTo(true);
@@ -301,22 +310,48 @@ public class NewRecommendProductType {
                         if (pageSize == null) {
                             pageSize = 10;
                         }
+                        
+                        // appClient列表对应的aid
+                        String packageName = environment.getArgument("packageName");
+                        Long channelId = environment.getArgument("channelId");
+                        AppClientExample exp = new AppClientExample();
+                        exp.createCriteria()
+                               .andPackageNameEqualTo(packageName)
+                               .andChannelIdEqualTo(channelId);
+                        List<AppClient> appClients = appClientMapper.selectByExample(exp);
+                        
+                        Long allowAppId;
+                        if (appClients != null && appClients.size() != 0) {
+                            allowAppId = appClients.get(0).getId();
+                        }
+                        
                         System.out.println("pageNumber: " + pageNumber);
                         System.out.println("pageSize: " + pageSize);
                         Integer pageId = environment.getArgument("pageId");
                         System.out.println("pageId: " + pageId);
-//                        if (pageId != null && pageId == 1) {
-//                            if (pageNumber == 1) {
                         PageHelper.startPage(1, 5);
                         List<Product> list = productMapper.selectByExample(example);
                         return list;
-//                            } else {
-//                                return null;
-//                            }
-//                        }
-//                        PageHelper.startPage(pageNumber, pageSize);
-//                        List<Product> list = productMapper.selectByExample(example);
-//                        return list;
+                        */
+                        
+                        // appClient列表对应的aid
+                        String packageName = environment.getArgument("packageName");
+                        Long channelId = environment.getArgument("channelId");
+                        AppClientExample exp = new AppClientExample();
+                        exp.createCriteria()
+                               .andPackageNameEqualTo(packageName)
+                               .andChannelIdEqualTo(channelId);
+                        List<AppClient> appClients = appClientMapper.selectByExample(exp);
+                        
+                        Long allowAppId = 0l;
+                        if (appClients != null && appClients.size() != 0) {
+                            allowAppId = appClients.get(0).getId();
+                        }
+                        // 修改爆款产品返回的数量
+                        PageHelper.startPage(1, 5);
+                        List<Product> list = productMapper.selectHotProducts(allowAppId);
+                        return list;
+                        
                     } ).build();
         }
         return listQueryField;
@@ -351,4 +386,10 @@ public class NewRecommendProductType {
     public void setGuaranteeProductMappingMapper(GuaranteeProductMappingMapper guaranteeProductMappingMapper) {
         NewRecommendProductType.guaranteeProductMappingMapper = guaranteeProductMappingMapper;
     }
+    
+    @Autowired(required = true)
+    public void setAppClientMapper(AppClientMapper appClientMapper) {
+        NewRecommendProductType.appClientMapper = appClientMapper;
+    }
+    
 }

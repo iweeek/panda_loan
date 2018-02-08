@@ -53,6 +53,8 @@ public class GraphQLController {
 
     /**
      * GraphQL查询接口 键值对方式提交
+     * 2018年02月07日14:53:38 修改
+     * 因需求变更，见 http://119.23.12.36:81/redmine/issues/1326
      * 
      * @param queryString GraphQL查询字符串 @return @throws
      */
@@ -64,22 +66,30 @@ public class GraphQLController {
         String parameter = request.getHeader("Package-Name");
         String header = request.getHeader("Channel-Id");
         
-        if (query.contains("topNavs{")) {
+        if (query.contains("topNavs")) {
             String[] topNavs = query.split("topNavs");
             query = topNavs[0] + "topNavs(packageName:\"" + packageName + "\", " + "channelId: " + channelId + ")" + topNavs[1];
         }
-        if (query.contains("midAds{")) {
+        if (query.contains("midAds")) {
             String[] midAds = query.split("midAds");
             query = midAds[0] + "midAds(packageName: \"" + packageName + "\", " + "channelId: " + channelId + ")" + midAds[1];
         }
-        if (query.contains("midNavs{")) {
+        if (query.contains("midNavs")) {
             String[] midNavs = query.split("midNavs");
             query = midNavs[0] + "midNavs(packageName: \"" + packageName + "\", " + "channelId: " + channelId + ")" + midNavs[1];
         }
-        if (query.contains("topRightEntry{")) {
+        if (query.contains("topRightEntry")) {
             String[] topRightEntry = query.split("topRightEntry");
             query = topRightEntry[0] + "topRightEntry(packageName: \"" + packageName + "\", " + "channelId: " + channelId + ")" + topRightEntry[1];
         }
+        if (query.contains("recommendProductsNew")) {
+            String[] recommendProductsNew = query.split("recommendProductsNew\\(");
+            query = recommendProductsNew[0] + "recommendProductsNew(packageName: \"" + packageName + "\", " + "channelId: " + channelId + "," + recommendProductsNew[1];
+        }
+//        if (query.contains("recommendProducts")) {
+//            String[] recommendProductsNew = query.split("recommendProductsNew\\(");
+//            query = recommendProductsNew[0] + "recommendProductsNew(packageName: \"" + packageName + "\", " + "channelId: " + channelId + "," + recommendProductsNew[1];
+//        }
         
         logger.debug("query query: " + query);
         System.out.println("query query: " + query);
