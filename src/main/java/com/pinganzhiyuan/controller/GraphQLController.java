@@ -86,10 +86,10 @@ public class GraphQLController {
             String[] recommendProductsNew = query.split("recommendProductsNew\\(");
             query = recommendProductsNew[0] + "recommendProductsNew(packageName: \"" + packageName + "\", " + "channelId: " + channelId + "," + recommendProductsNew[1];
         }
-//        if (query.contains("recommendProducts")) {
-//            String[] recommendProductsNew = query.split("recommendProductsNew\\(");
-//            query = recommendProductsNew[0] + "recommendProductsNew(packageName: \"" + packageName + "\", " + "channelId: " + channelId + "," + recommendProductsNew[1];
-//        }
+        if (query.contains("recommendProducts(")) {
+            String[] recommendProducts = query.split("recommendProducts\\(");
+            query = recommendProducts[0] + "recommendProducts(packageName: \"" + packageName + "\", " + "channelId: " + channelId + "," + recommendProducts[1];
+        }
         
         logger.debug("query query: " + query);
         System.out.println("query query: " + query);

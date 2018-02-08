@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.pinganzhiyuan.mapper.AppClientMapper;
 import com.pinganzhiyuan.mapper.ColumnMapper;
 import com.pinganzhiyuan.mapper.GuaranteeProductMappingMapper;
 import com.pinganzhiyuan.mapper.GuaranteeTypeMappingMapper;
@@ -22,6 +24,8 @@ import com.pinganzhiyuan.mapper.ProductMapper;
 import com.pinganzhiyuan.mapper.ProductTypeMappingMapper;
 import com.pinganzhiyuan.mapper.SelectOrderMapper;
 import com.pinganzhiyuan.mapper.TermMapper;
+import com.pinganzhiyuan.model.AppClient;
+import com.pinganzhiyuan.model.AppClientExample;
 import com.pinganzhiyuan.model.Column;
 import com.pinganzhiyuan.model.ColumnExample;
 import com.pinganzhiyuan.model.GuaranteeProductMapping;
@@ -61,6 +65,7 @@ public class RecommendProductType {
     private static SelectOrderMapper selectOrderMapper;
     private static LoanAmountRangeMapper loanAmountRangeMapper;
     private static TermMapper termMapper;
+    private static AppClientMapper appClientMapper;
     
     private static ColumnMapper columnMapper;
     private static ProductColumnMappingMapper productColumnMappingMapper;
@@ -186,10 +191,26 @@ public class RecommendProductType {
                     .argument(GraphQLArgument.newArgument().name("productTypeId").type(Scalars.GraphQLLong).build())
                     .argument(GraphQLArgument.newArgument().name("pageNumber").type(Scalars.GraphQLInt).build())
                     .argument(GraphQLArgument.newArgument().name("pageSize").type(Scalars.GraphQLInt).build())
+                    .argument(GraphQLArgument.newArgument().name("packageName").type(Scalars.GraphQLString).build())
+                    .argument(GraphQLArgument.newArgument().name("channelId").type(Scalars.GraphQLLong).build())
                     .name("recommendProducts")
                     .description("获取产品列表")
                     .type(new GraphQLList(getType()))
                     .dataFetcher(environment -> {
+                        // appClient列表对应的aid
+                        String packageName = environment.getArgument("packageName");
+                        Long channelId = environment.getArgument("channelId");
+                        AppClientExample exp = new AppClientExample();
+                        exp.createCriteria()
+                               .andPackageNameEqualTo(packageName)
+                               .andChannelIdEqualTo(channelId);
+                        List<AppClient> appClients = appClientMapper.selectByExample(exp);
+                        
+                        Long allowAppId = 0l;
+                        if (appClients != null && appClients.size() != 0) {
+                            allowAppId = appClients.get(0).getId();
+                        }
+                        
 //                        String guaranteeIds = environment.getArgument("guaranteeIds");
                         Long guaranteeId = environment.getArgument("guaranteeId");
                         List<GuaranteeTypeMapping> guaranteeTypeMappingList = null;
@@ -252,7 +273,20 @@ public class RecommendProductType {
                             example.setOrderByClause(" weight desc ");
                             List<Product> list = productMapper.selectByExample(example);
                             
-                            return list;
+                            // 新增过滤 app 和渠道的筛选条件
+                            List<Product> filterList = new ArrayList<>();
+                            for (Product product : list) {
+                                if (product.getAppClientIds() != null) {
+                                    String[] split = product.getAppClientIds().split(",");
+                                    for (String id : split) {
+                                        if (String.valueOf(allowAppId).equals(id)) {
+                                            filterList.add(product);
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            return filterList;
                             
                            
 //                          List<ProductTypeMapping> list = productTypeMappingMapper.selectByExample(example);
@@ -374,7 +408,18 @@ public class RecommendProductType {
                         
                         PageHelper.startPage(pageNumber, pageSize);
                         List<Product> list = productMapper.selectByExample(example);
-                        return list;
+                        List<Product> filterList = new ArrayList<>();
+                        for (Product product : list) {
+                            if (product.getAppClientIds() != null) {
+                                String[] split = product.getAppClientIds().split(",");
+                                for (String id : split) {
+                                    if (String.valueOf(allowAppId).equals(id)) {
+                                        filterList.add(product);
+                                    }
+                                }
+                            }
+                        }
+                        return filterList;
                     } ).build();
         }
         return listQueryField;
@@ -421,5 +466,10 @@ public class RecommendProductType {
     @Autowired(required = true)
     public void setTermMapper(TermMapper termMapper) {
         RecommendProductType.termMapper = termMapper;
+    }
+    
+    @Autowired(required = true)
+    public void setAppClientMapper(AppClientMapper appClientMapper) {
+        RecommendProductType.appClientMapper = appClientMapper;
     }
 }
