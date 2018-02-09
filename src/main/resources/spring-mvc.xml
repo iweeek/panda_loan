@@ -70,6 +70,7 @@
             <mvc:mapping path="/versions/**"/>
             <mvc:mapping path="/clients/**"/>
             <mvc:mapping path="/landingPage/**"/>
+            <mvc:mapping path="/recordH5/**"/>
             <bean class="com.pinganzhiyuan.interceptor.DeviceInterceptor"></bean>
         </mvc:interceptor>
     </mvc:interceptors> 
