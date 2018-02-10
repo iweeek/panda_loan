@@ -76,7 +76,8 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             
             String landingChannelUid = request.getHeader("Landing-Channel-Uid");
             
-            // 区分是来自客户端，还是其他投放渠道 && 不包括登录
+            // 1: 区分是来自客户端，还是其他投放渠道 && 不包括登录
+            // 2: H5除了Landing页面的请求
             if (landingChannelUid == null) {
              // 如果有代理转发，则获取代理转发的地址
                 String ip = request.getHeader("x-real-ip");

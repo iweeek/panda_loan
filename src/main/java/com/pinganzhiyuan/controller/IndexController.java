@@ -60,7 +60,7 @@ public class IndexController {
     
     @RequestMapping(value="/recordH5", method = RequestMethod.POST)
     public ResponseEntity<?> recordH5(@RequestParam("userId") String userId,
-                            @RequestParam("productId") String productId,
+                            @RequestParam("pid") String productId,
                             HttpServletRequest request, HttpServletResponse response) {
         
         Product product = productMapper.selectByPrimaryKey(Long.valueOf(productId));
