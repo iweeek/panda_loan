@@ -6,12 +6,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pinganzhiyuan.mapper.AppClientMapper;
 import com.pinganzhiyuan.mapper.ClientColumnMappingMapper;
 import com.pinganzhiyuan.mapper.ClientVersionMapper;
 import com.pinganzhiyuan.mapper.ColumnMapper;
 import com.pinganzhiyuan.mapper.MidNavMapper;
 import com.pinganzhiyuan.mapper.ProductColumnMappingMapper;
 import com.pinganzhiyuan.mapper.ProductMapper;
+import com.pinganzhiyuan.model.AppClient;
+import com.pinganzhiyuan.model.AppClientExample;
 import com.pinganzhiyuan.model.ClientColumnMapping;
 import com.pinganzhiyuan.model.ClientColumnMappingExample;
 import com.pinganzhiyuan.model.MidAd;
@@ -40,6 +43,7 @@ public class MidNavType {
     
     private static ColumnMapper columnMapper;
     private static ProductColumnMappingMapper productColumnMappingMapper;
+    private static AppClientMapper appClientMapper;
     
     private static ProductMapper productMapper;
 
@@ -111,6 +115,19 @@ public class MidNavType {
                         
                         String packageName = environment.getArgument("packageName");
                         Long channelId = environment.getArgument("channelId");
+                        
+                        // 根据APP
+                        AppClientExample exp = new AppClientExample();
+                        exp.createCriteria()
+                               .andPackageNameEqualTo(packageName)
+                               .andChannelIdEqualTo(channelId);
+                        List<AppClient> appClients = appClientMapper.selectByExample(exp);
+                        
+                        Long allowAppId = 0l;
+                        if (appClients != null && appClients.size() != 0) {
+                            allowAppId = appClients.get(0).getId();
+                        }
+                        
                         int platform;
                         String columnKey = "mid_nav_01";
                         
@@ -152,8 +169,22 @@ public class MidNavType {
                         ProductExample productExample = new ProductExample();
                         productExample.createCriteria().andIdIn(productIds).andIsPublishedEqualTo(true);
                         List<Product> products = productMapper.selectByExample(productExample);
-                        List<MidNav> midNavs = new ArrayList<>();
+                        
+                        List<Product> filterList = new ArrayList<>();
+                        // 根据APP做过滤
                         for (Product product : products) {
+                            if (product.getAppClientIds() != null) {
+                                String[] split = product.getAppClientIds().split(",");
+                                for (String id : split) {
+                                    if (String.valueOf(allowAppId).equals(id)) {
+                                        filterList.add(product);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        List<MidNav> midNavs = new ArrayList<>();
+                        for (Product product : filterList) {
                             midNavs.add(MidNav.convertToModel(product));
                         }
                         
@@ -188,5 +219,9 @@ public class MidNavType {
     @Autowired(required = true)
     public void setProductMapper(ProductMapper productMapper) {
         MidNavType.productMapper = productMapper;
+    }
+    @Autowired(required = true)
+    public void setAppClientMapper(AppClientMapper appClientMapper) {
+        MidNavType.appClientMapper = appClientMapper;
     }
 }
