@@ -112,7 +112,7 @@ public class MidAdType {
                         String packageName = environment.getArgument("packageName");
                         Long channelId = environment.getArgument("channelId");
                         int platform;
-                        String columnKey = "";
+                        String columnKey = "mid_ad_01";
                         
                         if (channelId == 13) {
                             platform = 1;
@@ -123,7 +123,8 @@ public class MidAdType {
                         ClientColumnMappingExample example = new ClientColumnMappingExample();
                         example.createCriteria()
                             .andPackageNameEqualTo(packageName)
-                            .andPlatformIdEqualTo(platform);
+                            .andPlatformIdEqualTo(platform)
+                            .andColumnKeyEqualTo(columnKey);
                         List<ClientColumnMapping> list = clientColumnMappingMapper.selectByExample(example);
                         if (list == null || list.size() == 0) {
                             return null;
@@ -145,11 +146,11 @@ public class MidAdType {
                         
                         List<Long> productIds = new ArrayList();
                         for (ProductColumnMapping mapping : productColumnMappings) {
-                            productIds.add(mapping.getId());
+                            productIds.add(mapping.getProductId());
                         }
                         // 返回产品
                         ProductExample productExample = new ProductExample();
-                        productExample.createCriteria().andIdIn(productIds);
+                        productExample.createCriteria().andIdIn(productIds).andIsPublishedEqualTo(true);
                         List<Product> products = productMapper.selectByExample(productExample);
                         List<MidAd> midAds = new ArrayList<>();
                         for (Product product : products) {
