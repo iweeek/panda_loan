@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.pinganzhiyuan.mapper.AppClientMapper;
+import com.pinganzhiyuan.mapper.ClientColumnMappingMapper;
 import com.pinganzhiyuan.mapper.ColumnMapper;
 import com.pinganzhiyuan.mapper.GuaranteeProductMappingMapper;
 import com.pinganzhiyuan.mapper.GuaranteeTypeMappingMapper;
@@ -26,6 +27,8 @@ import com.pinganzhiyuan.mapper.SelectOrderMapper;
 import com.pinganzhiyuan.mapper.TermMapper;
 import com.pinganzhiyuan.model.AppClient;
 import com.pinganzhiyuan.model.AppClientExample;
+import com.pinganzhiyuan.model.ClientColumnMapping;
+import com.pinganzhiyuan.model.ClientColumnMappingExample;
 import com.pinganzhiyuan.model.Column;
 import com.pinganzhiyuan.model.ColumnExample;
 import com.pinganzhiyuan.model.GuaranteeProductMapping;
@@ -69,6 +72,7 @@ public class RecommendProductType {
     
     private static ColumnMapper columnMapper;
     private static ProductColumnMappingMapper productColumnMappingMapper;
+    private static ClientColumnMappingMapper clientColumnMappingMapper; 
     
     private static GraphQLObjectType type;
    
@@ -359,8 +363,6 @@ public class RecommendProductType {
 //                            
 //                        }
                         
-                        Integer typeId = environment.getArgument("typeId");
-                        
                         ProductExample example = new ProductExample();
                         Criteria criteria = example.createCriteria();
                         criteria.andIsPublishedEqualTo(true);
@@ -384,10 +386,6 @@ public class RecommendProductType {
                             }
                         }
                         
-                        if (typeId != null) {
-                            criteria.andApplyTimesGreaterThan(0);
-                        }
-                        
                         String orderByClause = "";
                         if (selectOrder != null && !selectOrder.equals("")) {
                             orderByClause += selectOrder + ", ";
@@ -406,9 +404,43 @@ public class RecommendProductType {
                             pageSize = 10;
                         }
                         
+                        // 近七日排行榜单独拿出来处理
+                        Integer typeId = environment.getArgument("typeId");
+                        if (typeId != null) {
+                            
+                            List<Long> productIds = new ArrayList();
+                            productIds.addAll(filterColumn(packageName, channelId));
+                            // 返回产品
+                            ProductExample productExample = new ProductExample();
+                            productExample.createCriteria()
+                                          .andIdIn(productIds)
+                                          .andIsPublishedEqualTo(true)
+                                          .andApplyTimesGreaterThan(0);
+                            PageHelper.startPage(pageNumber, pageSize);
+                            List<Product> products = productMapper.selectByExample(productExample);
+                            
+//                            criteria.andApplyTimesGreaterThan(0);
+//                            PageHelper.startPage(pageNumber, pageSize);
+//                            List<Product> list = productMapper.selectByExample(example);
+                            List<Product> filterList = new ArrayList<>();
+                            // 根据APP
+                            for (Product product : products) {
+                                if (product.getAppClientIds() != null) {
+                                    String[] split = product.getAppClientIds().split(",");
+                                    for (String id : split) {
+                                        if (String.valueOf(allowAppId).equals(id)) {
+                                            filterList.add(product);
+                                        }
+                                    }
+                                }
+                            }
+                            return filterList;
+                        }
+                        
                         PageHelper.startPage(pageNumber, pageSize);
                         List<Product> list = productMapper.selectByExample(example);
                         List<Product> filterList = new ArrayList<>();
+                        // 根据APP做过滤
                         for (Product product : list) {
                             if (product.getAppClientIds() != null) {
                                 String[] split = product.getAppClientIds().split(",");
@@ -423,6 +455,53 @@ public class RecommendProductType {
                     } ).build();
         }
         return listQueryField;
+    }
+    
+    /**
+     *  抽取成一个方法，根据栏位过滤，七日排行榜
+     * @param packageName
+     * @param channelId
+     * @return
+     */
+    public static List<Long> filterColumn(String packageName, Long channelId) {
+        int platform;
+        String columnKey = "top_right_entry_01";
+        
+        if (channelId == 13) {
+            platform = 1;
+        } else {
+            platform = 0;
+        }
+        // 根据栏位
+        ClientColumnMappingExample example = new ClientColumnMappingExample();
+        example.createCriteria()
+            .andPackageNameEqualTo(packageName)
+            .andPlatformIdEqualTo(platform)
+            .andColumnKeyEqualTo(columnKey);
+        List<ClientColumnMapping> list = clientColumnMappingMapper.selectByExample(example);
+        if (list == null || list.size() == 0) {
+            return null;
+        } else {
+            columnKey = list.get(0).getColumnKey();
+        }
+        
+        ProductColumnMappingExample productColumnMappingExample = 
+              new ProductColumnMappingExample();
+        productColumnMappingExample
+                .createCriteria().andColumnKeyEqualTo(columnKey);
+        
+        
+        List<ProductColumnMapping> productColumnMappings = 
+                productColumnMappingMapper.selectByExample(productColumnMappingExample);
+        if (productColumnMappings == null || productColumnMappings.size() == 0) {
+            return null;
+        }
+        
+        List<Long> productIds = new ArrayList();
+        for (ProductColumnMapping mapping : productColumnMappings) {
+            productIds.add(mapping.getProductId());
+        }
+        return productIds;
     }
     
     @Autowired(required = true)
@@ -471,5 +550,10 @@ public class RecommendProductType {
     @Autowired(required = true)
     public void setAppClientMapper(AppClientMapper appClientMapper) {
         RecommendProductType.appClientMapper = appClientMapper;
+    }
+    
+    @Autowired(required = true)
+    public void setClientColumnMappingMapper(ClientColumnMappingMapper clientColumnMappingMapper) {
+        RecommendProductType.clientColumnMappingMapper = clientColumnMappingMapper;
     }
 }

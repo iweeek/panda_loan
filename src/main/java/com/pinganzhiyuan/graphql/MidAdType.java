@@ -128,43 +128,45 @@ public class MidAdType {
                             allowAppId = appClients.get(0).getId();
                         }
                         
-                        int platform;
-                        String columnKey = "mid_ad_01";
-                        
-                        if (channelId == 13) {
-                            platform = 1;
-                        } else {
-                            platform = 0;
-                        }
+//                        int platform;
+//                        String columnKey = "mid_ad_01";
+//                        
+//                        if (channelId == 13) {
+//                            platform = 1;
+//                        } else {
+//                            platform = 0;
+//                        }
                         // 根据栏位
-                        ClientColumnMappingExample example = new ClientColumnMappingExample();
-                        example.createCriteria()
-                            .andPackageNameEqualTo(packageName)
-                            .andPlatformIdEqualTo(platform)
-                            .andColumnKeyEqualTo(columnKey);
-                        List<ClientColumnMapping> list = clientColumnMappingMapper.selectByExample(example);
-                        if (list == null || list.size() == 0) {
-                            return null;
-                        } else {
-                            columnKey = list.get(0).getColumnKey();
-                        }
-                        
-                        ProductColumnMappingExample productColumnMappingExample = 
-                              new ProductColumnMappingExample();
-                        productColumnMappingExample
-                                .createCriteria().andColumnKeyEqualTo(columnKey);
-                        
-                        
-                        List<ProductColumnMapping> productColumnMappings = 
-                                productColumnMappingMapper.selectByExample(productColumnMappingExample);
-                        if (productColumnMappings == null || productColumnMappings.size() == 0) {
-                            return null;
-                        }
-                        
+//                        ClientColumnMappingExample example = new ClientColumnMappingExample();
+//                        example.createCriteria()
+//                            .andPackageNameEqualTo(packageName)
+//                            .andPlatformIdEqualTo(platform)
+//                            .andColumnKeyEqualTo(columnKey);
+//                        List<ClientColumnMapping> list = clientColumnMappingMapper.selectByExample(example);
+//                        if (list == null || list.size() == 0) {
+//                            return null;
+//                        } else {
+//                            columnKey = list.get(0).getColumnKey();
+//                        }
+//                        
+//                        ProductColumnMappingExample productColumnMappingExample = 
+//                              new ProductColumnMappingExample();
+//                        productColumnMappingExample
+//                                .createCriteria().andColumnKeyEqualTo(columnKey);
+//                        
+//                        
+//                        List<ProductColumnMapping> productColumnMappings = 
+//                                productColumnMappingMapper.selectByExample(productColumnMappingExample);
+//                        if (productColumnMappings == null || productColumnMappings.size() == 0) {
+//                            return null;
+//                        }
+//                        
+//                        List<Long> productIds = new ArrayList();
+//                        for (ProductColumnMapping mapping : productColumnMappings) {
+//                            productIds.add(mapping.getProductId());
+//                        }
                         List<Long> productIds = new ArrayList();
-                        for (ProductColumnMapping mapping : productColumnMappings) {
-                            productIds.add(mapping.getProductId());
-                        }
+                        productIds.addAll(filterColumn(packageName, channelId));
                         // 返回产品
                         ProductExample productExample = new ProductExample();
                         productExample.createCriteria().andIdIn(productIds).andIsPublishedEqualTo(true);
@@ -191,7 +193,49 @@ public class MidAdType {
                         return midAds;
                     } ).build();
         }
+        
         return listQueryField;
+    }
+    
+    public static List<Long> filterColumn(String packageName, Long channelId) {
+        int platform;
+        String columnKey = "mid_ad_01";
+        
+        if (channelId == 13) {
+            platform = 1;
+        } else {
+            platform = 0;
+        }
+        // 根据栏位
+        ClientColumnMappingExample example = new ClientColumnMappingExample();
+        example.createCriteria()
+            .andPackageNameEqualTo(packageName)
+            .andPlatformIdEqualTo(platform)
+            .andColumnKeyEqualTo(columnKey);
+        List<ClientColumnMapping> list = clientColumnMappingMapper.selectByExample(example);
+        if (list == null || list.size() == 0) {
+            return null;
+        } else {
+            columnKey = list.get(0).getColumnKey();
+        }
+        
+        ProductColumnMappingExample productColumnMappingExample = 
+              new ProductColumnMappingExample();
+        productColumnMappingExample
+                .createCriteria().andColumnKeyEqualTo(columnKey);
+        
+        
+        List<ProductColumnMapping> productColumnMappings = 
+                productColumnMappingMapper.selectByExample(productColumnMappingExample);
+        if (productColumnMappings == null || productColumnMappings.size() == 0) {
+            return null;
+        }
+        
+        List<Long> productIds = new ArrayList();
+        for (ProductColumnMapping mapping : productColumnMappings) {
+            productIds.add(mapping.getProductId());
+        }
+        return productIds;
     }
     
     @Autowired(required = true)
