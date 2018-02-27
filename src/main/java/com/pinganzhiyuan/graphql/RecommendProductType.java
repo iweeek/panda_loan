@@ -249,11 +249,12 @@ public class RecommendProductType {
                             Column column = columnMapper.selectByPrimaryKey(productTypeId);
                             System.out.println("column: " + column);
                             
+                            // 根据栏位
                             ProductColumnMappingExample productColumnMappingExample = new ProductColumnMappingExample();
                             productColumnMappingExample.createCriteria().andColumnKeyEqualTo(column.getColumnKey());
                             List<ProductColumnMapping> productColumnMappings = 
                                     productColumnMappingMapper.selectByExample(productColumnMappingExample);
-
+                            
                             if (productColumnMappings.size() > 0) {
                                 for (ProductColumnMapping mapping : productColumnMappings) {
                                   productIdList.add(mapping.getProductId());
@@ -277,7 +278,7 @@ public class RecommendProductType {
                             example.setOrderByClause(" weight desc ");
                             List<Product> list = productMapper.selectByExample(example);
                             
-                            // 新增过滤 app 和渠道的筛选条件
+                            // 根据APP
                             List<Product> filterList = new ArrayList<>();
                             for (Product product : list) {
                                 if (product.getAppClientIds() != null) {
@@ -292,7 +293,6 @@ public class RecommendProductType {
                             
                             return filterList;
                             
-                           
 //                          List<ProductTypeMapping> list = productTypeMappingMapper.selectByExample(example);
 //                            ProductTypeMappingExample example = new ProductTypeMappingExample();
 //                            example.createCriteria().andTypeIdEqualTo(productTypeId);
