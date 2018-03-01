@@ -416,6 +416,7 @@ public class RecommendProductType {
                                           .andIdIn(productIds)
                                           .andIsPublishedEqualTo(true)
                                           .andApplyTimesGreaterThan(0);
+                            productExample.setOrderByClause(" weight desc ");
                             PageHelper.startPage(pageNumber, pageSize);
                             List<Product> products = productMapper.selectByExample(productExample);
                             

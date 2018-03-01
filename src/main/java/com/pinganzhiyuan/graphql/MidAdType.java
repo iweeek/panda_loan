@@ -170,6 +170,7 @@ public class MidAdType {
                         // 返回产品
                         ProductExample productExample = new ProductExample();
                         productExample.createCriteria().andIdIn(productIds).andIsPublishedEqualTo(true);
+                        productExample.setOrderByClause(" weight desc ");
                         List<Product> products = productMapper.selectByExample(productExample);
                         
                         List<Product> filterList = new ArrayList<>();
