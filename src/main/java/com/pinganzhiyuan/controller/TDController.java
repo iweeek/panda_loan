@@ -4,6 +4,7 @@ package com.pinganzhiyuan.controller;
 import org.joda.time.DateTime;  
 import org.joda.time.format.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -79,10 +80,25 @@ public class TDController {
         deviceExample.createCriteria().andChannelIdEqualTo(channelId).andPackageNameEqualTo(packageName).andSendFlagEqualTo(true).andRegistDateEqualTo(dt);
         int count =  tdDeviceMapper.selectByExample(deviceExample).size();
         
-        if (count >= tdConfig.getThreshold()) {
-            tdDevice.setSendFlag(false);
+        //获取当日设备总数
+        deviceExample = new TDDeviceExample();
+        deviceExample.createCriteria().andChannelIdEqualTo(channelId).andPackageNameEqualTo(packageName).andRegistDateEqualTo(dt);
+        int totalCount =  tdDeviceMapper.selectByExample(deviceExample).size();
+        
+        if (totalCount == 0) {
+        	tdDevice.setSendFlag(true);
         } else {
-            tdDevice.setSendFlag(true);
+        	BigDecimal bdCount = new BigDecimal(String.valueOf(count));   
+            BigDecimal bdTotalCount = new BigDecimal(String.valueOf(totalCount));
+            
+            BigDecimal bdThreshold = new BigDecimal(String.valueOf(tdConfig.getThreshold()));
+            BigDecimal bdOneHundred = new BigDecimal(String.valueOf(100));
+            
+        	if ( bdCount.divide(bdTotalCount,2,BigDecimal.ROUND_DOWN).doubleValue() >= bdThreshold.divide(bdOneHundred,2,BigDecimal.ROUND_DOWN).doubleValue()) {
+                tdDevice.setSendFlag(false);
+            } else {
+                tdDevice.setSendFlag(true);
+            }
         }
         tdDeviceMapper.insert(tdDevice);
         
