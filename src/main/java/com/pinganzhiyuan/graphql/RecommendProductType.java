@@ -414,9 +414,9 @@ public class RecommendProductType {
                             ProductExample productExample = new ProductExample();
                             productExample.createCriteria()
                                           .andIdIn(productIds)
-                                          .andIsPublishedEqualTo(true)
-                                          .andApplyTimesGreaterThan(0);
-                            productExample.setOrderByClause(" weight desc ");
+                                          .andIsPublishedEqualTo(true);
+//                                          .andApplyTimesGreaterThan(0);
+                            productExample.setOrderByClause(" apply_times desc, weight desc ");
                             PageHelper.startPage(pageNumber, pageSize);
                             List<Product> products = productMapper.selectByExample(productExample);
                             
