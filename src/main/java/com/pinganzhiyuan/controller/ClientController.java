@@ -28,6 +28,7 @@ import com.pinganzhiyuan.mapper.UserMapper;
 import com.pinganzhiyuan.model.Captcha;
 import com.pinganzhiyuan.model.Client;
 import com.pinganzhiyuan.model.ClientExample;
+import com.pinganzhiyuan.model.ClientExample.Criteria;
 import com.pinganzhiyuan.model.IdVerification;
 import com.pinganzhiyuan.model.User;
 import com.pinganzhiyuan.service.CaptchaService;
@@ -69,7 +70,16 @@ public class ClientController {
             @ApiParam("性别，选填")@RequestParam(required = false) Boolean isMan, @ApiParam("民族，选填")@RequestParam(required = false) String nation,
             @ApiParam("生日，选填")@RequestParam(required = false) @DateTimeFormat(pattern="yyyyMMdd") Date birthday, @ApiParam("身份证签发机关，选填")@RequestParam(required = false) String auth,
             @ApiParam("身份证过期时间，选填")@RequestParam(required = false) @DateTimeFormat(pattern="yyyyMMdd") Date expirDate, HttpServletRequest request) {
-        
+    	
+    		ClientExample exp = new ClientExample();
+    		Criteria criteria = exp.createCriteria().andNameEqualTo(name)
+    								.andIdentityNoEqualTo(idNo);
+    		List<Client> clients = clientMapper.selectByExample(exp);
+   
+    		if (clients != null && clients.size() > 0) {
+    			return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(null); 
+    		}
+    	
         if (!verifyIdentity(name, idNo)) {
             return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).body(null); 
         }
