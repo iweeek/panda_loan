@@ -70,7 +70,6 @@ public class ClientController {
             @ApiParam("性别，选填")@RequestParam(required = false) Boolean isMan, @ApiParam("民族，选填")@RequestParam(required = false) String nation,
             @ApiParam("生日，选填")@RequestParam(required = false) @DateTimeFormat(pattern="yyyyMMdd") Date birthday, @ApiParam("身份证签发机关，选填")@RequestParam(required = false) String auth,
             @ApiParam("身份证过期时间，选填")@RequestParam(required = false) @DateTimeFormat(pattern="yyyyMMdd") Date expirDate, HttpServletRequest request) {
-    	
     		ClientExample exp = new ClientExample();
     		Criteria criteria = exp.createCriteria().andNameEqualTo(name)
     								.andIdentityNoEqualTo(idNo);
