@@ -28,6 +28,7 @@ import com.pinganzhiyuan.mapper.UserMapper;
 import com.pinganzhiyuan.model.Captcha;
 import com.pinganzhiyuan.model.Client;
 import com.pinganzhiyuan.model.ClientExample;
+import com.pinganzhiyuan.model.ClientExample.Criteria;
 import com.pinganzhiyuan.model.IdVerification;
 import com.pinganzhiyuan.model.User;
 import com.pinganzhiyuan.service.CaptchaService;
@@ -69,7 +70,58 @@ public class ClientController {
             @ApiParam("性别，选填")@RequestParam(required = false) Boolean isMan, @ApiParam("民族，选填")@RequestParam(required = false) String nation,
             @ApiParam("生日，选填")@RequestParam(required = false) @DateTimeFormat(pattern="yyyyMMdd") Date birthday, @ApiParam("身份证签发机关，选填")@RequestParam(required = false) String auth,
             @ApiParam("身份证过期时间，选填")@RequestParam(required = false) @DateTimeFormat(pattern="yyyyMMdd") Date expirDate, HttpServletRequest request) {
-        
+    	
+    		ClientExample exp = new ClientExample();
+    		Criteria criteria = exp.createCriteria().andNameEqualTo(name)
+    								.andIdentityNoEqualTo(idNo);
+    		List<Client> clients = clientMapper.selectByExample(exp);
+   
+    		if (clients != null && clients.size() > 0) {
+    			Client client = new Client();
+    	        client.setUserId(userId);
+    	        client.setName(name);
+    	        client.setIdentityNo(idNo);
+    	        
+    	        if (edu != null) {
+    	            client.setEducation(edu);
+    	        }
+    	        
+    	        if (guarantee != null) {
+    	            client.setGuarantee(guarantee);
+    	        }
+    	        
+    	        if (profession != null) {
+    	            client.setProfession(profession);;
+    	        }
+    	        
+    	        if (resiAddr != null) {
+    	            client.setResidenceAddr(resiAddr);
+    	        }
+    	        
+    	        if (isMan != null) {
+    	            client.setIsMan(isMan);
+    	        }
+    	        
+    	        if (nation != null) {
+    	            client.setNation(nation);
+    	        }
+    	        
+    	        if (birthday != null) {
+    	            client.setBirthday(birthday);
+    	        }
+    	        
+    	        if (auth != null) {
+    	            client.setIdentityAuth(auth);
+    	        }
+    	        
+    	        if (expirDate != null) {
+    	            client.setIdentityExpiration(expirDate);
+    	        }
+    	        
+    	        int ret = clientMapper.insertSelective(client);
+    	        return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(null); 
+    		}
+    	
         if (!verifyIdentity(name, idNo)) {
             return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).body(null); 
         }
@@ -152,25 +204,45 @@ public class ClientController {
         }
         
         JSONObject obj = new JSONObject(result);
+        JSONObject data = null;
         try {
-            JSONObject data = obj.getJSONObject("data");
-            
-            IdVerification idVerif = new IdVerification();
-            idVerif.setName(name);
-            idVerif.setIdentity(id);
-            idVerif.setCode(data.getString("code"));
-            idVerif.setDescription(data.getString("desc"));
-            idVerif.setPhoto(data.getString("photo"));
-            idVerif.setTransId(data.getString("trans_id"));
-            idVerif.setTradeNo(data.getString("trade_no"));
-            idVerif.setFee(data.getString("fee"));
-            
-            idVerificationMapper.insert(idVerif);
-        
-            return true;
+            data = obj.getJSONObject("data");
         } catch(Exception e) {
             e.printStackTrace();
             return false;
         }
+        IdVerification idVerif = new IdVerification();
+        if (data != null) {
+        		String code = data.getString("code");
+            idVerif.setName(name);
+            idVerif.setIdentity(id);
+            idVerif.setCode(code);
+            idVerif.setDescription(data.getString("desc"));
+            if (code.equals(0)) {
+            		idVerif.setPhoto(data.getString("photo"));
+            }
+            idVerif.setTransId(data.getString("trans_id"));
+            idVerif.setTradeNo(data.getString("trade_no"));
+            idVerif.setFee(data.getString("fee"));
+            idVerificationMapper.insert(idVerif);
+            
+            if (code.equals("1")) {
+        			return false;
+            } else {
+            		return true;
+            }
+        } else {
+        		idVerif.setName(name);
+            idVerif.setIdentity(id);
+            idVerif.setCode("2");
+            idVerif.setDescription("网络错误");
+            idVerif.setPhoto("");
+            idVerif.setTransId("");
+            idVerif.setTradeNo("");
+            idVerif.setFee("N");
+            idVerificationMapper.insert(idVerif);
+            return false;
+        }
+        
     }
 }
