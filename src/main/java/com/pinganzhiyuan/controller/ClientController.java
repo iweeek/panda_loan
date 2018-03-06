@@ -76,6 +76,11 @@ public class ClientController {
     		List<Client> clients = clientMapper.selectByExample(exp);
    
     		if (clients != null && clients.size() > 0) {
+    			// 姓名、身份证、UserId 都相同的情况下，直接返回。
+    			if (clients.get(0).getUserId() == userId) {
+    				return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(null); 
+    			}
+    			
     			Client client = new Client();
     	        client.setUserId(userId);
     	        client.setName(name);
