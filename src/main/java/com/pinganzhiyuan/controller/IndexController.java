@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pinganzhiyuan.mapper.ClientVersionMapper;
 import com.pinganzhiyuan.mapper.H5AppClientMapper;
+import com.pinganzhiyuan.mapper.H5AppDownloadLogMapper;
 import com.pinganzhiyuan.mapper.H5ClientVersionMapper;
 import com.pinganzhiyuan.mapper.LandingChannelMapper;
 import com.pinganzhiyuan.mapper.LandingDeviceLogMapper;
@@ -57,6 +58,8 @@ public class IndexController {
     private H5ClientVersionMapper h5ClientVersionMapper;
     @Autowired
     private ClientVersionMapper clientVersionMapper;
+    @Autowired
+    private H5AppDownloadLogMapper h5AppDownloadLogMapper;
     
     @RequestMapping(value="/record", method = RequestMethod.GET)
     public void record(HttpServletRequest request, HttpServletResponse response) {
@@ -209,7 +212,7 @@ public class IndexController {
     }
 	
 	@RequestMapping(value = "/recordDownload", method = RequestMethod.POST)
-    public void recordDownload(@RequestParam(name = "userId", required = false) String userId,
+    public ResponseEntity<?> recordDownload(@RequestParam(name = "userId", required = false) String userId,
                             @RequestParam(name = "downloadUrl", required = false) String downloadUrl,
                             HttpServletRequest request, HttpServletResponse response) {
 		
@@ -254,12 +257,9 @@ public class IndexController {
 	    h5AppDownloadLog.setIp(request.getRemoteAddr());
 	    h5AppDownloadLog.setUserId(Long.valueOf(userId));
 	    h5AppDownloadLog.setUserAgent( request.getHeader("User-Agent"));
+	    h5AppDownloadLogMapper.insertSelective(h5AppDownloadLog);
 	    
-	    try {
-			response.sendRedirect(downloadUrl);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	    return ResponseEntity.status(HttpServletResponse.SC_OK).body(null);
 	}
     
 }
