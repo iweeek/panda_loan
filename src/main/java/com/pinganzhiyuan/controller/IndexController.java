@@ -28,6 +28,7 @@ import com.pinganzhiyuan.model.ClientVersion;
 import com.pinganzhiyuan.model.ClientVersionExample;
 import com.pinganzhiyuan.model.H5AppClient;
 import com.pinganzhiyuan.model.H5AppClientExample;
+import com.pinganzhiyuan.model.H5AppDownloadLog;
 import com.pinganzhiyuan.model.H5ClientVersion;
 import com.pinganzhiyuan.model.H5ClientVersionExample;
 import com.pinganzhiyuan.model.LandingChannel;
@@ -199,7 +200,7 @@ public class IndexController {
 	    		List<H5ClientVersion> h5ClientVersions = h5ClientVersionMapper.selectByExample(h5ClientVersionExample);
 	    		
 	    		if (h5ClientVersions != null && h5ClientVersions.size() != 0) {
-	    			int clientVersionId = h5ClientVersions.get(0).getClientVersionId();
+	    			long clientVersionId = h5ClientVersions.get(0).getClientVersionId();
 	    			clientVersion = clientVersionMapper.selectByPrimaryKey(Long.valueOf(clientVersionId));
 	    		}
 	    }
@@ -208,84 +209,57 @@ public class IndexController {
     }
 	
 	@RequestMapping(value = "/recordDownload", method = RequestMethod.POST)
-    public ResponseEntity<?> recordDownload(@RequestParam(name = "userId", required = false) String userId,
+    public void recordDownload(@RequestParam(name = "userId", required = false) String userId,
                             @RequestParam(name = "downloadUrl", required = false) String downloadUrl,
                             HttpServletRequest request, HttpServletResponse response) {
 		
-	
-//		Product product = productMapper.selectByPrimaryKey(Long.valueOf(productId));
-//        // 处理 URL，截取最后真正的链接
-//        String redirectUri = "";
-//        
-//        if (product != null) {
-//            String url = product.getUrl();
-//            
-//            Pattern p = Pattern.compile("redirect=(.*?)###");//正则表达式，取; 和; 之间的字符串  
-//            Matcher m = p.matcher(product.getUrl() + "###");
-//            if (m.find()) {
-//                    try {
-//                        redirectUri = URLDecoder.decode(m.group(1), "UTF-8");
-//                } catch (UnsupportedEncodingException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//        
-//        if (redirectUri == null) {
-//            return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND).body(null); 
-//        } else {
-            String userAgent = request.getHeader("User-Agent");
-            String landingChannelUid = request.getHeader("Landing-Channel-Uid");
-            StringBuffer url = request.getRequestURL();
-            
-        		LandingDeviceLog landingDeviceLog = new LandingDeviceLog();
-        		landingDeviceLog.setIp(request.getRemoteAddr());
-        		landingDeviceLog.setLandingChannelUid(landingChannelUid);
-        		landingDeviceLog.setUrl(url.toString());
-        		landingDeviceLog.setUserAgent(userAgent);
-        		landingDeviceLog.setUserId(Long.valueOf(userId));
-//        		landingDeviceLog.setpId(Long.valueOf(productId));
-        		
-        		LandingChannelExample example = new LandingChannelExample();
-            example.createCriteria().andChannelUidEqualTo(landingChannelUid);
-            List<LandingChannel> landingChannel = landingChannelMapper.selectByExample(example);
-            if (landingChannel != null && landingChannel.size() != 0) {
-                landingDeviceLog.setLandingChannelId(landingChannel.get(0).getId());
-            } else {
-                landingDeviceLog.setLandingChannelId(0l);
-            }
-            
-            String h5WebName = request.getHeader("H5-Web-Name");
-            if (h5WebName != null) {
-            	 	H5AppClientExample h5AppClientExample = new H5AppClientExample();
-                 h5AppClientExample.createCriteria().andNameEqualTo(h5WebName);
-                 List<H5AppClient> h5AppClients = h5AppClientMapper.selectByExample(h5AppClientExample);
-            		if (h5AppClients != null && h5AppClients.size() != 0) {
-            			landingDeviceLog.setH5AppId(h5AppClients.get(0).getId());
-            		}
-            }
-        		
-            landingDeviceLogMapper.insertSelective(landingDeviceLog);
-            
-        
-//        String redirectUri = request.getParameter("redirect");
-//        if (redirectUri == null) {
-//        } else {
-//            try {
-////                System.out.println("redirectUri: "+ redirectUri);
-//                LenderAccessLog log = new LenderAccessLog();
-//                log.setLenderUrl(redirectUri);
-//                log.setDeviceId(deviceId);
-//                log.setUserId(Long.valueOf(userId));
-//                log.setpId(Long.valueOf(pId));
-//                lenderAccessLogMapper.insert(log);
-//                response.sendRedirect(redirectUri);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
+		Long h5AppId = null;
+		Long h5ChannelId = null;
+		ClientVersion clientVersion = null;
+		H5AppDownloadLog h5AppDownloadLog = new H5AppDownloadLog();
 		
-		
+		String h5WebName = request.getHeader("H5-Web-Name");
+	    if (h5WebName != null) {
+	    	 	H5AppClientExample h5AppClientExample = new H5AppClientExample();
+	         h5AppClientExample.createCriteria().andNameEqualTo(h5WebName);
+	         List<H5AppClient> h5AppClients = h5AppClientMapper.selectByExample(h5AppClientExample);
+	    		if (h5AppClients != null && h5AppClients.size() != 0) {
+	    			h5AppId = h5AppClients.get(0).getId();
+	    		}
+	    }
+	    
+	    String landingChannelUid = request.getHeader("Landing-Channel-Uid");
+	    LandingChannelExample example = new LandingChannelExample();
+	    example.createCriteria().andChannelUidEqualTo(landingChannelUid);
+	    List<LandingChannel> landingChannel = landingChannelMapper.selectByExample(example);
+	    if (landingChannel != null && landingChannel.size() != 0) {
+	    		h5ChannelId = landingChannel.get(0).getId();
+	    } 
+	    
+	    String platformId = request.getHeader("Platform-Id");
+	    if (h5AppId != null && h5ChannelId != null) {
+	    		H5ClientVersionExample h5ClientVersionExample = new H5ClientVersionExample();
+	    		h5ClientVersionExample.createCriteria().andH5AppIdEqualTo(h5AppId)
+	    								.andH5ChannelIdEqualTo(h5ChannelId)
+	    								.andPlatformIdEqualTo(Byte.valueOf(platformId));
+	    		List<H5ClientVersion> h5ClientVersions = h5ClientVersionMapper.selectByExample(h5ClientVersionExample);
+	    		
+	    		if (h5ClientVersions != null && h5ClientVersions.size() != 0) {
+	    			long clientVersionId = h5ClientVersions.get(0).getClientVersionId();
+//	    			clientVersion = clientVersionMapper.selectByPrimaryKey(Long.valueOf(clientVersionId));
+	    			h5AppDownloadLog.setAppClientVersionId(h5ClientVersions.get(0).getClientVersionId());
+	    			h5AppDownloadLog.setH5ClientVersionId(h5ClientVersions.get(0).getId());
+	    		}
+	    }
+	    h5AppDownloadLog.setIp(request.getRemoteAddr());
+	    h5AppDownloadLog.setUserId(Long.valueOf(userId));
+	    h5AppDownloadLog.setUserAgent( request.getHeader("User-Agent"));
+	    
+	    try {
+			response.sendRedirect(downloadUrl);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
     
 }
