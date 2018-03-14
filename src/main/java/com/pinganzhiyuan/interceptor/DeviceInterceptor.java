@@ -185,6 +185,15 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
                 if (sid != null) {
                     deviceLog.setSid(sid);
                 }
+                
+                String IDFV = request.getHeader("IDFV");
+                if (IDFV != null) {
+                		deviceLog.setIdfv(IDFV);
+                }
+                String IDFA = request.getHeader("IDFA");
+                if (IDFA != null) {
+                		deviceLog.setIdfa(IDFA);
+                }
     
                 deviceLogMapper.insert(deviceLog);
             } else {
