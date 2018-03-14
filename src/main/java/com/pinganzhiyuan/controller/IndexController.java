@@ -3,6 +3,7 @@ package com.pinganzhiyuan.controller;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,8 +17,22 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pinganzhiyuan.mapper.ClientVersionMapper;
+import com.pinganzhiyuan.mapper.H5AppClientMapper;
+import com.pinganzhiyuan.mapper.H5ClientVersionMapper;
+import com.pinganzhiyuan.mapper.LandingChannelMapper;
+import com.pinganzhiyuan.mapper.LandingDeviceLogMapper;
 import com.pinganzhiyuan.mapper.LenderAccessLogMapper;
 import com.pinganzhiyuan.mapper.ProductMapper;
+import com.pinganzhiyuan.model.ClientVersion;
+import com.pinganzhiyuan.model.ClientVersionExample;
+import com.pinganzhiyuan.model.H5AppClient;
+import com.pinganzhiyuan.model.H5AppClientExample;
+import com.pinganzhiyuan.model.H5ClientVersion;
+import com.pinganzhiyuan.model.H5ClientVersionExample;
+import com.pinganzhiyuan.model.LandingChannel;
+import com.pinganzhiyuan.model.LandingChannelExample;
+import com.pinganzhiyuan.model.LandingDeviceLog;
 import com.pinganzhiyuan.model.LenderAccessLog;
 import com.pinganzhiyuan.model.Product;
 
@@ -28,7 +43,19 @@ public class IndexController {
     private LenderAccessLogMapper lenderAccessLogMapper;
     
     @Autowired
+    private LandingDeviceLogMapper landingDeviceLogMapper;
+    
+    @Autowired
+    private LandingChannelMapper landingChannelMapper;
+    
+    @Autowired
     private ProductMapper productMapper;
+    @Autowired
+    private H5AppClientMapper h5AppClientMapper;
+    @Autowired
+    private H5ClientVersionMapper h5ClientVersionMapper;
+    @Autowired
+    private ClientVersionMapper clientVersionMapper;
     
     @RequestMapping(value="/record", method = RequestMethod.GET)
     public void record(HttpServletRequest request, HttpServletResponse response) {
@@ -58,9 +85,17 @@ public class IndexController {
         }
     }
     
-    @RequestMapping(value="/recordH5", method = RequestMethod.POST)
-    public ResponseEntity<?> recordH5(@RequestParam("userId") String userId,
-                            @RequestParam("pid") String productId,
+    /**
+     * 从原来的 lender_access_log 表迁移到 landing_device_log 中
+     * @param userId
+     * @param productId
+     * @param request
+     * @param response
+     * @return
+     */
+	@RequestMapping(value = "/recordH5", method = RequestMethod.POST)
+    public ResponseEntity<?> recordH5(@RequestParam(name = "userId", required = false) String userId,
+                            @RequestParam(name = "pid", required = false) String productId,
                             HttpServletRequest request, HttpServletResponse response) {
         
         Product product = productMapper.selectByPrimaryKey(Long.valueOf(productId));
@@ -84,15 +119,173 @@ public class IndexController {
         if (redirectUri == null) {
             return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND).body(null); 
         } else {
-            LenderAccessLog log = new LenderAccessLog();
-            log.setLenderUrl(redirectUri);
-            log.setDeviceId("device-id-h5");
-            log.setUserId(Long.valueOf(userId));
-            log.setpId(Long.valueOf(productId));
-            lenderAccessLogMapper.insert(log);
+            String userAgent = request.getHeader("User-Agent");
+            String landingChannelUid = request.getHeader("Landing-Channel-Uid");
+            StringBuffer url = request.getRequestURL();
+            
+        		LandingDeviceLog landingDeviceLog = new LandingDeviceLog();
+        		landingDeviceLog.setIp(request.getRemoteAddr());
+        		landingDeviceLog.setLandingChannelUid(landingChannelUid);
+        		landingDeviceLog.setUrl(url.toString());
+        		landingDeviceLog.setUserAgent(userAgent);
+        		landingDeviceLog.setUserId(Long.valueOf(userId));
+        		landingDeviceLog.setpId(Long.valueOf(productId));
+        		
+        		LandingChannelExample example = new LandingChannelExample();
+            example.createCriteria().andChannelUidEqualTo(landingChannelUid);
+            List<LandingChannel> landingChannel = landingChannelMapper.selectByExample(example);
+            if (landingChannel != null && landingChannel.size() != 0) {
+                landingDeviceLog.setLandingChannelId(landingChannel.get(0).getId());
+            } else {
+                landingDeviceLog.setLandingChannelId(0l);
+            }
+            
+            String h5WebName = request.getHeader("H5-Web-Name");
+            if (h5WebName != null) {
+            	 	H5AppClientExample h5AppClientExample = new H5AppClientExample();
+                 h5AppClientExample.createCriteria().andNameEqualTo(h5WebName);
+                 List<H5AppClient> h5AppClients = h5AppClientMapper.selectByExample(h5AppClientExample);
+            		if (h5AppClients != null && h5AppClients.size() != 0) {
+            			landingDeviceLog.setH5AppId(h5AppClients.get(0).getId());
+            		}
+            }
+        		
+            landingDeviceLogMapper.insertSelective(landingDeviceLog);
+            
+//            LenderAccessLog log = new LenderAccessLog();
+//            log.setLenderUrl(redirectUri);
+//            log.setDeviceId("device-id-h5");
+//            log.setUserId(Long.valueOf(userId));
+//            log.setpId(Long.valueOf(productId));
+//            lenderAccessLogMapper.insert(log);
             
             return ResponseEntity.status(HttpServletResponse.SC_OK).body(redirectUri);
         }
-        
     }
+	
+	@RequestMapping(value = "/h5DownloadUrl", method = RequestMethod.POST)
+    public ResponseEntity<?> getDownloadUrl(
+                            HttpServletRequest request, HttpServletResponse response) {
+        
+		Long h5AppId = null;
+		Long h5ChannelId = null;
+		ClientVersion clientVersion = null;
+		
+		String h5WebName = request.getHeader("H5-Web-Name");
+	    if (h5WebName != null) {
+	    	 	H5AppClientExample h5AppClientExample = new H5AppClientExample();
+	         h5AppClientExample.createCriteria().andNameEqualTo(h5WebName);
+	         List<H5AppClient> h5AppClients = h5AppClientMapper.selectByExample(h5AppClientExample);
+	    		if (h5AppClients != null && h5AppClients.size() != 0) {
+	    			h5AppId = h5AppClients.get(0).getId();
+	    		}
+	    }
+	    
+	    String landingChannelUid = request.getHeader("Landing-Channel-Uid");
+	    LandingChannelExample example = new LandingChannelExample();
+	    example.createCriteria().andChannelUidEqualTo(landingChannelUid);
+	    List<LandingChannel> landingChannel = landingChannelMapper.selectByExample(example);
+	    if (landingChannel != null && landingChannel.size() != 0) {
+	    		h5ChannelId = landingChannel.get(0).getId();
+	    } 
+	    
+	    String platformId = request.getHeader("Platform-Id");
+	    
+	    if (h5AppId != null && h5ChannelId != null) {
+	    		H5ClientVersionExample h5ClientVersionExample = new H5ClientVersionExample();
+	    		h5ClientVersionExample.createCriteria().andH5AppIdEqualTo(h5AppId)
+	    								.andH5ChannelIdEqualTo(h5ChannelId)
+	    								.andPlatformIdEqualTo(Byte.valueOf(platformId));
+	    		List<H5ClientVersion> h5ClientVersions = h5ClientVersionMapper.selectByExample(h5ClientVersionExample);
+	    		
+	    		if (h5ClientVersions != null && h5ClientVersions.size() != 0) {
+	    			int clientVersionId = h5ClientVersions.get(0).getClientVersionId();
+	    			clientVersion = clientVersionMapper.selectByPrimaryKey(Long.valueOf(clientVersionId));
+	    		}
+	    }
+            
+        return ResponseEntity.status(HttpServletResponse.SC_OK).body(clientVersion);
+    }
+	
+	@RequestMapping(value = "/recordDownload", method = RequestMethod.POST)
+    public ResponseEntity<?> recordDownload(@RequestParam(name = "userId", required = false) String userId,
+                            @RequestParam(name = "downloadUrl", required = false) String downloadUrl,
+                            HttpServletRequest request, HttpServletResponse response) {
+		
+	
+//		Product product = productMapper.selectByPrimaryKey(Long.valueOf(productId));
+//        // 处理 URL，截取最后真正的链接
+//        String redirectUri = "";
+//        
+//        if (product != null) {
+//            String url = product.getUrl();
+//            
+//            Pattern p = Pattern.compile("redirect=(.*?)###");//正则表达式，取; 和; 之间的字符串  
+//            Matcher m = p.matcher(product.getUrl() + "###");
+//            if (m.find()) {
+//                    try {
+//                        redirectUri = URLDecoder.decode(m.group(1), "UTF-8");
+//                } catch (UnsupportedEncodingException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//        
+//        if (redirectUri == null) {
+//            return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND).body(null); 
+//        } else {
+            String userAgent = request.getHeader("User-Agent");
+            String landingChannelUid = request.getHeader("Landing-Channel-Uid");
+            StringBuffer url = request.getRequestURL();
+            
+        		LandingDeviceLog landingDeviceLog = new LandingDeviceLog();
+        		landingDeviceLog.setIp(request.getRemoteAddr());
+        		landingDeviceLog.setLandingChannelUid(landingChannelUid);
+        		landingDeviceLog.setUrl(url.toString());
+        		landingDeviceLog.setUserAgent(userAgent);
+        		landingDeviceLog.setUserId(Long.valueOf(userId));
+//        		landingDeviceLog.setpId(Long.valueOf(productId));
+        		
+        		LandingChannelExample example = new LandingChannelExample();
+            example.createCriteria().andChannelUidEqualTo(landingChannelUid);
+            List<LandingChannel> landingChannel = landingChannelMapper.selectByExample(example);
+            if (landingChannel != null && landingChannel.size() != 0) {
+                landingDeviceLog.setLandingChannelId(landingChannel.get(0).getId());
+            } else {
+                landingDeviceLog.setLandingChannelId(0l);
+            }
+            
+            String h5WebName = request.getHeader("H5-Web-Name");
+            if (h5WebName != null) {
+            	 	H5AppClientExample h5AppClientExample = new H5AppClientExample();
+                 h5AppClientExample.createCriteria().andNameEqualTo(h5WebName);
+                 List<H5AppClient> h5AppClients = h5AppClientMapper.selectByExample(h5AppClientExample);
+            		if (h5AppClients != null && h5AppClients.size() != 0) {
+            			landingDeviceLog.setH5AppId(h5AppClients.get(0).getId());
+            		}
+            }
+        		
+            landingDeviceLogMapper.insertSelective(landingDeviceLog);
+            
+        
+//        String redirectUri = request.getParameter("redirect");
+//        if (redirectUri == null) {
+//        } else {
+//            try {
+////                System.out.println("redirectUri: "+ redirectUri);
+//                LenderAccessLog log = new LenderAccessLog();
+//                log.setLenderUrl(redirectUri);
+//                log.setDeviceId(deviceId);
+//                log.setUserId(Long.valueOf(userId));
+//                log.setpId(Long.valueOf(pId));
+//                lenderAccessLogMapper.insert(log);
+//                response.sendRedirect(redirectUri);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+		
+		
+	}
+    
 }

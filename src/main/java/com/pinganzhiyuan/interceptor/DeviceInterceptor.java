@@ -17,12 +17,15 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.mysql.cj.api.x.io.MessageWriter;
 import com.pinganzhiyuan.mapper.DeviceLogMapper;
+import com.pinganzhiyuan.mapper.H5AppClientMapper;
 import com.pinganzhiyuan.mapper.LandingChannelMapper;
 import com.pinganzhiyuan.mapper.LandingDeviceLogMapper;
 import com.pinganzhiyuan.mapper.LenderAccessLogMapper;
 import com.pinganzhiyuan.mapper.UserMapper;
 import com.pinganzhiyuan.model.DeviceLog;
 import com.pinganzhiyuan.model.DeviceLogExample;
+import com.pinganzhiyuan.model.H5AppClient;
+import com.pinganzhiyuan.model.H5AppClientExample;
 import com.pinganzhiyuan.model.LandingChannel;
 import com.pinganzhiyuan.model.LandingChannelExample;
 import com.pinganzhiyuan.model.LandingDeviceLog;
@@ -38,18 +41,16 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
     private DeviceLogMapper deviceLogMapper;
-
     @Autowired
     private LandingDeviceLogMapper landingDeviceLogMapper;
-    
     @Autowired
     private UserMapper userMapper;
-    
     @Autowired
     private LandingChannelMapper landingChannelMapper;
-    
     @Autowired
     private LenderAccessLogMapper lenderAccessLogMapper;
+    @Autowired
+    private H5AppClientMapper h5AppClientMapper;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -187,7 +188,7 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
     
                 deviceLogMapper.insert(deviceLog);
             } else {
-                if (!request.getRequestURI().contains("/tokens")) {
+                if (!request.getRequestURI().contains("/tokens") && !request.getRequestURI().contains("/recordH5")) {
                     LandingDeviceLog landingDeviceLog = new LandingDeviceLog();
                     landingDeviceLog.setUserAgent(userAgent);
                     landingDeviceLog.setLandingChannelUid(landingChannelUid);
@@ -196,7 +197,19 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
                     landingDeviceLog.setUrl(url.toString());
                     
                     String sid = request.getHeader("Sid");
-                    landingDeviceLog.setSid(sid);
+                    if (sid != null) {
+                    		landingDeviceLog.setSid(sid);
+                    }
+                    
+                    String h5WebName = request.getHeader("H5-Web-Name");
+                    if (h5WebName != null) {
+                    	 	H5AppClientExample h5AppClientExample = new H5AppClientExample();
+                         h5AppClientExample.createCriteria().andNameEqualTo(h5WebName);
+                         List<H5AppClient> h5AppClients = h5AppClientMapper.selectByExample(h5AppClientExample);
+                    		if (h5AppClients != null && h5AppClients.size() != 0) {
+                    			landingDeviceLog.setH5AppId(h5AppClients.get(0).getId());
+                    		}
+                    }
                     
                     String ip = request.getRemoteAddr();
                     landingDeviceLog.setIp(ip);
@@ -211,7 +224,6 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
                     }
                     
                     landingDeviceLogMapper.insert(landingDeviceLog);
-                    
                 }
             }
         }
@@ -267,7 +279,17 @@ User user = null;
                 landingDeviceLog.setLandingChannelId(0l);
             }
             
-            landingDeviceLogMapper.insert(landingDeviceLog);
+            String h5WebName = request.getHeader("H5-Web-Name");
+            if (h5WebName != null) {
+            	 	H5AppClientExample h5AppClientExample = new H5AppClientExample();
+                 h5AppClientExample.createCriteria().andNameEqualTo(h5WebName);
+                 List<H5AppClient> h5AppClients = h5AppClientMapper.selectByExample(h5AppClientExample);
+            		if (h5AppClients != null && h5AppClients.size() != 0) {
+            			landingDeviceLog.setH5AppId(h5AppClients.get(0).getId());
+            		}
+            }
+            
+            landingDeviceLogMapper.insertSelective(landingDeviceLog);
         }
         
         super.postHandle(request, response, handler, modelAndView);
