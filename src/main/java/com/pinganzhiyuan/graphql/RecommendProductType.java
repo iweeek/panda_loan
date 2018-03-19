@@ -4,7 +4,9 @@ import static org.hamcrest.CoreMatchers.nullValue;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,6 +21,13 @@ import com.pinganzhiyuan.mapper.ClientColumnMappingMapper;
 import com.pinganzhiyuan.mapper.ColumnMapper;
 import com.pinganzhiyuan.mapper.GuaranteeProductMappingMapper;
 import com.pinganzhiyuan.mapper.GuaranteeTypeMappingMapper;
+import com.pinganzhiyuan.mapper.H5AppClientColumnMappingMapper;
+import com.pinganzhiyuan.mapper.H5AppClientMapper;
+import com.pinganzhiyuan.mapper.H5ClientVersionMapper;
+import com.pinganzhiyuan.mapper.H5ColumnMapper;
+import com.pinganzhiyuan.mapper.H5ProductClientVersionMappingMapper;
+import com.pinganzhiyuan.mapper.H5ProductColumnMappingMapper;
+import com.pinganzhiyuan.mapper.LandingChannelMapper;
 import com.pinganzhiyuan.mapper.LoanAmountRangeMapper;
 import com.pinganzhiyuan.mapper.ProductColumnMappingMapper;
 import com.pinganzhiyuan.mapper.ProductMapper;
@@ -29,12 +38,24 @@ import com.pinganzhiyuan.model.AppClient;
 import com.pinganzhiyuan.model.AppClientExample;
 import com.pinganzhiyuan.model.ClientColumnMapping;
 import com.pinganzhiyuan.model.ClientColumnMappingExample;
+import com.pinganzhiyuan.model.ClientVersion;
 import com.pinganzhiyuan.model.Column;
 import com.pinganzhiyuan.model.ColumnExample;
 import com.pinganzhiyuan.model.GuaranteeProductMapping;
 import com.pinganzhiyuan.model.GuaranteeProductMappingExample;
 import com.pinganzhiyuan.model.GuaranteeTypeMapping;
 import com.pinganzhiyuan.model.GuaranteeTypeMappingExample;
+import com.pinganzhiyuan.model.H5AppClient;
+import com.pinganzhiyuan.model.H5AppClientExample;
+import com.pinganzhiyuan.model.H5ClientVersion;
+import com.pinganzhiyuan.model.H5ClientVersionExample;
+import com.pinganzhiyuan.model.H5Column;
+import com.pinganzhiyuan.model.H5ProductClientVersionMapping;
+import com.pinganzhiyuan.model.H5ProductClientVersionMappingExample;
+import com.pinganzhiyuan.model.H5ProductColumnMapping;
+import com.pinganzhiyuan.model.H5ProductColumnMappingExample;
+import com.pinganzhiyuan.model.LandingChannel;
+import com.pinganzhiyuan.model.LandingChannelExample;
 import com.pinganzhiyuan.model.Product;
 import com.pinganzhiyuan.model.ProductColumnMapping;
 import com.pinganzhiyuan.model.ProductColumnMappingExample;
@@ -60,6 +81,7 @@ public class RecommendProductType {
     
     private static GraphQLFieldDefinition singleQueryField;
     private static GraphQLFieldDefinition listQueryField;
+    private static GraphQLFieldDefinition h5ListQueryField;
     
     private static ProductMapper productMapper;
     private static GuaranteeTypeMappingMapper guaranteeTypeMappingMapper;
@@ -73,8 +95,15 @@ public class RecommendProductType {
     private static ColumnMapper columnMapper;
     private static ProductColumnMappingMapper productColumnMappingMapper;
     private static ClientColumnMappingMapper clientColumnMappingMapper; 
+    private static H5AppClientMapper h5AppClientMapper;
+    private static H5ClientVersionMapper h5ClientVersionMapper;
+    private static LandingChannelMapper landingChannelMapper;
+    private static H5ProductClientVersionMappingMapper h5ProductClientVersionMappingMapper;
+    private static H5ProductColumnMappingMapper h5ProductColumnMappingMapper;
+    private static H5ColumnMapper h5ColumnMapper;
+    private static H5AppClientColumnMappingMapper h5AppClientColumnMappingMapper;
     
-    private static GraphQLObjectType type;
+	private static GraphQLObjectType type;
    
 
     public static GraphQLObjectType getType() {
@@ -217,23 +246,8 @@ public class RecommendProductType {
                         
 //                        String guaranteeIds = environment.getArgument("guaranteeIds");
                         Long guaranteeId = environment.getArgument("guaranteeId");
-                        List<GuaranteeTypeMapping> guaranteeTypeMappingList = null;
                         List<Long> productIdList = new ArrayList<Long>();
                         if (guaranteeId != null && guaranteeId != 0) {
-                            //两次映射的逻辑
-//                            GuaranteeTypeMappingExample gExample = new GuaranteeTypeMappingExample();
-//                            gExample.or().andGuaranteeIdEqualTo(guaranteeId);
-//                            
-//                            guaranteeTypeMappingList = guaranteeTypeMappingMapper.selectByExample(gExample);
-//                            for (GuaranteeTypeMapping guaranteeTypeMapping : guaranteeTypeMappingList) {
-//                              ProductTypeMappingExample example = new ProductTypeMappingExample();
-//                              example.or().andTypeIdEqualTo(guaranteeTypeMapping.getProductTypeId());
-//                              List<ProductTypeMapping> productTypeMappingList = productTypeMappingMapper.selectByExample(example);
-//                              for (ProductTypeMapping mapping : productTypeMappingList) {
-//                                  productIdList.add(mapping.getProductId());
-//                              }
-//                          }
-                            
                             //一级映射关系
                             GuaranteeProductMappingExample example = new GuaranteeProductMappingExample();
                             example.createCriteria().andGuaranteeIdEqualTo(guaranteeId);
@@ -293,38 +307,8 @@ public class RecommendProductType {
                             
                             return filterList;
                             
-//                          List<ProductTypeMapping> list = productTypeMappingMapper.selectByExample(example);
-//                            ProductTypeMappingExample example = new ProductTypeMappingExample();
-//                            example.createCriteria().andTypeIdEqualTo(productTypeId);
-//                            
-//                            List<ProductTypeMapping> list = productTypeMappingMapper.selectByExample(example);
-//                            if (list.size() > 0) {
-//                                for (ProductTypeMapping mapping : list) {
-//                                  productIdList.add(mapping.getProductId());
-//                              }
-//                            }
                         }
                         
-                        //取出抵押Id列表
-//                        if (guaranteeIds != null) {
-//                            String guarIdArr[] = guaranteeIds.split("|");
-//                            
-//                            GuaranteeTypeMappingExample gExample = new GuaranteeTypeMappingExample();
-//                            for (String guarId : guarIdArr) {
-//                                gExample.or().andGuaranteeIdEqualTo(Long.valueOf(guarId));
-//                            }
-//                            
-//                            //获取产品类型列表
-//                            guaranteeTypeMappingList = guaranteeTypeMappingMapper.selectByExample(gExample);
-//                            for (GuaranteeTypeMapping guaranteeTypeMapping : guaranteeTypeMappingList) {
-//                                ProductTypeMappingExample example = new ProductTypeMappingExample();
-//                                example.or().andTypeIdEqualTo(guaranteeTypeMapping.getProductTypeId());
-//                                List<ProductTypeMapping> productTypeMappingList = productTypeMappingMapper.selectByExample(example);
-//                                for (ProductTypeMapping mapping : productTypeMappingList) {
-//                                    productIdList.add(mapping.getProductId());
-//                                }
-//                            }
-//                        }
                         LoanAmountRange loanAmountRange = null;
                         Long loanAmountRangeId = environment.getArgument("loanAmountRangeId");
                         if (loanAmountRangeId != null && loanAmountRangeId != 0) {
@@ -355,13 +339,6 @@ public class RecommendProductType {
                             List<SelectOrder> list = selectOrderMapper.selectByExample(example);
                             selectOrder = list.get(0).getField();
                         }
-                        
-//                        if (guaranteeTypeMappingList != null) {
-//                            for (GuaranteeTypeMapping guaranteeTypeMapping : guaranteeTypeMappingList) {
-//                                example.or().andTyp
-//                            }
-//                            
-//                        }
                         
                         ProductExample example = new ProductExample();
                         Criteria criteria = example.createCriteria();
@@ -407,8 +384,7 @@ public class RecommendProductType {
                         // 近七日排行榜单独拿出来处理
                         Integer typeId = environment.getArgument("typeId");
                         if (typeId != null) {
-                            
-                            List<Long> productIds = new ArrayList();
+                            List<Long> productIds = new ArrayList<Long>();
                             productIds.addAll(filterColumn(packageName, channelId));
                             // 返回产品
                             ProductExample productExample = new ProductExample();
@@ -420,9 +396,6 @@ public class RecommendProductType {
                             PageHelper.startPage(pageNumber, pageSize);
                             List<Product> products = productMapper.selectByExample(productExample);
                             
-//                            criteria.andApplyTimesGreaterThan(0);
-//                            PageHelper.startPage(pageNumber, pageSize);
-//                            List<Product> list = productMapper.selectByExample(example);
                             List<Product> filterList = new ArrayList<>();
                             // 根据APP
                             for (Product product : products) {
@@ -458,6 +431,156 @@ public class RecommendProductType {
         return listQueryField;
     }
     
+    
+    
+    public static GraphQLFieldDefinition getH5SearchListField() {
+        if(h5ListQueryField == null) {
+        	h5ListQueryField = GraphQLFieldDefinition.newFieldDefinition()
+                    .argument(GraphQLArgument.newArgument().name("productTypeId").type(Scalars.GraphQLLong).build())
+                    .argument(GraphQLArgument.newArgument().name("pageNumber").type(Scalars.GraphQLInt).build())
+                    .argument(GraphQLArgument.newArgument().name("pageSize").type(Scalars.GraphQLInt).build())
+                    .argument(GraphQLArgument.newArgument().name("h5WebName").type(Scalars.GraphQLString).build())
+                    .argument(GraphQLArgument.newArgument().name("h5ChannelUid").type(Scalars.GraphQLString).build())
+                    .argument(GraphQLArgument.newArgument().name("platformId").type(Scalars.GraphQLString).build())
+                    .name("h5RecommendProducts")
+                    .description("获取产品列表")
+                    .type(new GraphQLList(getType()))
+                    .dataFetcher(environment -> {
+                    	
+	                    	Long h5AppId = null;
+	                		Long h5ChannelId = null;
+	                		// 匹配的产品ID
+	                		List<Long> h5ProductIDs = null;
+	                		
+	                		// 可以单独处理top_nav
+                        Long productTypeId = environment.getArgument("productTypeId");
+                        if (productTypeId != null) {
+                        		H5Column h5Column = h5ColumnMapper.selectByPrimaryKey(productTypeId);
+                            System.out.println("h5Column: " + h5Column);
+                            
+                            // 根据栏位
+                            H5ProductColumnMappingExample h5ProductColumnMappingExample =
+                            		new H5ProductColumnMappingExample();
+                            h5ProductColumnMappingExample.createCriteria()
+                            		.andH5ColumnKeyEqualTo(h5Column.getH5ColumnKey())
+                            		.andStatusEqualTo((byte) 1);
+                            h5ProductColumnMappingExample.setOrderByClause("sequence desc");
+                            List<H5ProductColumnMapping> h5ProductColumnMappings = 
+                            		h5ProductColumnMappingMapper.selectByExample(h5ProductColumnMappingExample);
+                            
+                            h5ProductIDs = new ArrayList<>();
+                            if (h5ProductColumnMappings.size() > 0) {
+                                for (H5ProductColumnMapping mapping : h5ProductColumnMappings) {
+                                		h5ProductIDs.add(mapping.getProductId());
+                                }
+                            }
+                            System.out.println("h5ProductIDs：" + h5ProductIDs);
+                            
+//                            if (h5ProductIDs.size() == 0) {
+//                                return null;
+//                            }
+//                            ProductExample productExample = new ProductExample();
+//                            Criteria criteria = productExample.createCriteria();
+//                            criteria.andIsPublishedEqualTo(true);
+//                            
+//                            if (h5ProductIDs.size() != 0) {
+//                                criteria.andIdIn(h5ProductIDs);
+//                            }
+                            
+                            Integer pageNumber = environment.getArgument("pageNumber");
+                            if (pageNumber == null) {
+                                pageNumber = 1;
+                            }
+                            
+                            Integer pageSize = environment.getArgument("pageSize");
+                            if (pageSize == null) {
+                                pageSize = 10;
+                            }
+                            
+                            PageHelper.startPage(pageNumber, pageSize);
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("list", h5ProductIDs);
+//                            List<Product> list = productMapper.selectByExample(productExample);
+                            List<Product> products = 
+                            		productMapper.associateWithH5ProductColumnMapping(map);
+                            return products;
+                        }
+	                		
+	                		String h5WebName = environment.getArgument("h5WebName");
+	                	    if (h5WebName != null) {
+	                	    	 	H5AppClientExample h5AppClientExample = new H5AppClientExample();
+	                	         h5AppClientExample.createCriteria().andNameEqualTo(h5WebName);
+	                	         List<H5AppClient> h5AppClients = h5AppClientMapper.selectByExample(h5AppClientExample);
+	                	    		if (h5AppClients != null && h5AppClients.size() != 0) {
+	                	    			h5AppId = h5AppClients.get(0).getId();
+	                	    		}
+	                	    }
+	                	    
+	                	    String landingChannelUid = environment.getArgument("h5ChannelUid");
+	                	    LandingChannelExample landingChannelExample = new LandingChannelExample();
+	                	    landingChannelExample.createCriteria().andChannelUidEqualTo(landingChannelUid);
+	                	    List<LandingChannel> landingChannel = landingChannelMapper.selectByExample(landingChannelExample);
+	                	    if (landingChannel != null && landingChannel.size() != 0) {
+	                	    		h5ChannelId = landingChannel.get(0).getId();
+	                	    } 
+	                	    
+	                	    String platformId = environment.getArgument("platformId");
+	                	    
+	                	    if (h5AppId != null && h5ChannelId != null) {
+	                	    		H5ClientVersionExample h5ClientVersionExample = new H5ClientVersionExample();
+	                	    		h5ClientVersionExample.createCriteria().andH5AppIdEqualTo(h5AppId)
+	                	    								.andH5ChannelIdEqualTo(h5ChannelId)
+	                	    								.andPlatformIdEqualTo(Byte.valueOf(platformId));
+	                	    		List<H5ClientVersion> h5ClientVersions = h5ClientVersionMapper.selectByExample(h5ClientVersionExample);
+	                	    		
+	                	    		if (h5ClientVersions != null && h5ClientVersions.size() != 0) {
+	                	    			long h5ClientVersionId = h5ClientVersions.get(0).getId();
+	                	    			
+	                	    			H5ProductClientVersionMappingExample h5ProductClientVersionMappingExample = 
+	                	    					new H5ProductClientVersionMappingExample();
+		                	    		h5ProductClientVersionMappingExample.createCriteria()
+		                	    			.andH5ClientVersionIdEqualTo(h5ClientVersionId)
+		                	    			.andStatusEqualTo((byte) 1);
+		                	    		List<H5ProductClientVersionMapping> h5ProductClientVersionMappings = 
+		                	    				h5ProductClientVersionMappingMapper.selectByExample(h5ProductClientVersionMappingExample);
+		                	    		
+		                	    		h5ProductIDs = new ArrayList<Long>();
+		                	    		for(H5ProductClientVersionMapping h5ProductClientVersionMapping : 
+		                	    			h5ProductClientVersionMappings) {
+		                	    			h5ProductIDs.add(Long.valueOf((h5ProductClientVersionMapping.getProductId())));
+		                	    		}
+	                	    		}
+	                	    }
+
+	                	    ProductExample productExample = new ProductExample();
+                        Criteria criteria = productExample.createCriteria();
+                        criteria.andIsPublishedEqualTo(true);
+                        
+                        if (h5ProductIDs.size() != 0) {
+                            criteria.andIdIn(h5ProductIDs);
+                        }
+                        
+                        String orderByClause = "";
+                        orderByClause += "weight desc";
+                        productExample.setOrderByClause(orderByClause);
+                        
+                        Integer pageNumber = environment.getArgument("pageNumber");
+                        if (pageNumber == null) {
+                            pageNumber = 1;
+                        }
+                        
+                        Integer pageSize = environment.getArgument("pageSize");
+                        if (pageSize == null) {
+                            pageSize = 10;
+                        }
+                        
+                        PageHelper.startPage(pageNumber, pageSize);
+                        List<Product> list = productMapper.selectByExample(productExample);
+                        return list;
+                    } ).build();
+        }
+        return h5ListQueryField;
+    }
     /**
      *  抽取成一个方法，根据栏位过滤，七日排行榜
      * @param packageName
@@ -498,7 +621,7 @@ public class RecommendProductType {
             return null;
         }
         
-        List<Long> productIds = new ArrayList();
+        List<Long> productIds = new ArrayList<Long>();
         for (ProductColumnMapping mapping : productColumnMappings) {
             productIds.add(mapping.getProductId());
         }
@@ -547,14 +670,42 @@ public class RecommendProductType {
     public void setTermMapper(TermMapper termMapper) {
         RecommendProductType.termMapper = termMapper;
     }
-    
     @Autowired(required = true)
     public void setAppClientMapper(AppClientMapper appClientMapper) {
         RecommendProductType.appClientMapper = appClientMapper;
     }
-    
     @Autowired(required = true)
     public void setClientColumnMappingMapper(ClientColumnMappingMapper clientColumnMappingMapper) {
         RecommendProductType.clientColumnMappingMapper = clientColumnMappingMapper;
     }
+    @Autowired(required = true)
+    public void setH5AppClientMapper(H5AppClientMapper h5AppClientMapper) {
+		RecommendProductType.h5AppClientMapper = h5AppClientMapper;
+	}
+    @Autowired(required = true)
+	public void setH5ClientVersionMapper(H5ClientVersionMapper h5ClientVersionMapper) {
+		RecommendProductType.h5ClientVersionMapper = h5ClientVersionMapper;
+	}
+    @Autowired(required = true)
+	public void setLandingChannelMapper(LandingChannelMapper landingChannelMapper) {
+		RecommendProductType.landingChannelMapper = landingChannelMapper;
+	}
+    @Autowired(required = true)
+	public void setH5ProductClientVersionMappingMapper(
+			H5ProductClientVersionMappingMapper h5ProductClientVersionMappingMapper) {
+		RecommendProductType.h5ProductClientVersionMappingMapper = h5ProductClientVersionMappingMapper;
+	}
+    @Autowired(required = true)
+	public void setH5ProductColumnMappingMapper(H5ProductColumnMappingMapper h5ProductColumnMappingMapper) {
+		RecommendProductType.h5ProductColumnMappingMapper = h5ProductColumnMappingMapper;
+	}
+    @Autowired(required = true)
+	public void setH5ColumnMapper(H5ColumnMapper h5ColumnMapper) {
+		RecommendProductType.h5ColumnMapper = h5ColumnMapper;
+	}
+    @Autowired(required = true)
+	public void setH5AppClientColumnMappingMapper(H5AppClientColumnMappingMapper h5AppClientColumnMappingMapper) {
+		RecommendProductType.h5AppClientColumnMappingMapper = h5AppClientColumnMappingMapper;
+	}
+    
 }
