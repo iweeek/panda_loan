@@ -21,8 +21,8 @@ import com.pinganzhiyuan.mapper.ClientColumnMappingMapper;
 import com.pinganzhiyuan.mapper.ColumnMapper;
 import com.pinganzhiyuan.mapper.GuaranteeProductMappingMapper;
 import com.pinganzhiyuan.mapper.GuaranteeTypeMappingMapper;
-import com.pinganzhiyuan.mapper.H5AppClientColumnMappingMapper;
 import com.pinganzhiyuan.mapper.H5AppClientMapper;
+import com.pinganzhiyuan.mapper.H5ClientColumnMappingMapper;
 import com.pinganzhiyuan.mapper.H5ClientVersionMapper;
 import com.pinganzhiyuan.mapper.H5ColumnMapper;
 import com.pinganzhiyuan.mapper.H5ProductClientVersionMappingMapper;
@@ -101,7 +101,7 @@ public class RecommendProductType {
     private static H5ProductClientVersionMappingMapper h5ProductClientVersionMappingMapper;
     private static H5ProductColumnMappingMapper h5ProductColumnMappingMapper;
     private static H5ColumnMapper h5ColumnMapper;
-    private static H5AppClientColumnMappingMapper h5AppClientColumnMappingMapper;
+    private static H5ClientColumnMappingMapper h5ClientColumnMappingMapper;
     
 	private static GraphQLObjectType type;
    
@@ -704,8 +704,8 @@ public class RecommendProductType {
 		RecommendProductType.h5ColumnMapper = h5ColumnMapper;
 	}
     @Autowired(required = true)
-	public void setH5AppClientColumnMappingMapper(H5AppClientColumnMappingMapper h5AppClientColumnMappingMapper) {
-		RecommendProductType.h5AppClientColumnMappingMapper = h5AppClientColumnMappingMapper;
+	public void setH5ClientColumnMappingMapper(H5ClientColumnMappingMapper h5ClientColumnMappingMapper) {
+		RecommendProductType.h5ClientColumnMappingMapper = h5ClientColumnMappingMapper;
 	}
     
 }
