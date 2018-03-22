@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -167,8 +169,14 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
                 if (geoInfo != null) {
                     deviceLog.setGeoInfo(geoInfo);
                 }
-    
+
                 String pId = request.getParameter("pid");
+                Pattern p = Pattern.compile("pid=(.*?)&"); //正则表达式，取; 和; 之间的字符串
+                Matcher m = p.matcher(uri);
+                if (m.find()) {
+                    pId = m.group(1);
+                }
+                
                 if (pId == null) {
                     pId = request.getHeader("Pid");
                 }
