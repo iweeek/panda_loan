@@ -62,6 +62,15 @@ public class TDController {
         
         ResponseBody resBody = new ResponseBody<TDDevice>();
         
+        //判断数据库是否存在历史的判断结果,直接返回
+        TDDeviceExample tdDeviceExapmle = new TDDeviceExample();
+        tdDeviceExapmle.createCriteria().andChannelIdEqualTo(channelId).andPackageNameEqualTo(packageName).andDeviceIdEqualTo(deviceId);
+        if (tdDeviceMapper.selectByExample(tdDeviceExapmle).size() > 0) {
+        	resBody.statusMsg = "查询成功";
+            resBody.obj1 = tdDeviceMapper.selectByExample(tdDeviceExapmle).get(0);
+            return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(resBody);
+        }
+        
         Date dt = new Date(System.currentTimeMillis());
         
         TDDevice tdDevice = new TDDevice();
