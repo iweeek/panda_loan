@@ -154,9 +154,9 @@ public class MidNav {
         long maxAmount = product.getMaxAmount();
         String secondTag = "";
         if (maxAmount / 10000 >= 1) {
-            secondTag = "�?" + maxAmount / 10000 + "万元";
+            secondTag = "最高" + maxAmount / 10000 + "万元";
         } else {
-            secondTag = "�?" + maxAmount + "�?";
+            secondTag = "最高" + maxAmount + "万元";
         }
         midNav.setSubtitle(secondTag);
         return midNav;
