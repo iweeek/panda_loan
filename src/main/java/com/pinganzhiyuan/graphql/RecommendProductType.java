@@ -413,21 +413,35 @@ public class RecommendProductType {
                             return filterList;
                         }
                         
-                        PageHelper.startPage(pageNumber, pageSize);
+//                        PageHelper.startPage(pageNumber, pageSize);
                         List<Product> list = productMapper.selectByExample(example);
-                        List<Product> filterList = new ArrayList<>();
+                        List<Long> filterList = new ArrayList<>();
                         // 根据APP做过滤
                         for (Product product : list) {
                             if (product.getAppClientIds() != null) {
                                 String[] split = product.getAppClientIds().split(",");
                                 for (String id : split) {
                                     if (String.valueOf(allowAppId).equals(id)) {
-                                        filterList.add(product);
+                                        filterList.add(product.getId());
+                                        System.out.println( product.getId());
                                     }
                                 }
                             }
                         }
-                        return filterList;
+                        
+                        List<Product> finalList = new ArrayList<Product>();
+                        Map<String, Object> map = new HashMap<>();
+                        if(filterList != null) {
+	                        map.put("list", filterList);
+	                        PageHelper.startPage(pageNumber, pageSize);
+	                        ProductExample productExample = new ProductExample();
+	                        productExample.setOrderByClause("weight desc");
+	                        productExample.createCriteria()
+	                        			.andIdIn(filterList);
+	                        finalList = productMapper.selectByExample(productExample);
+                        }
+                        
+                        return finalList;
                     } ).build();
         }
         return listQueryField;
