@@ -509,6 +509,7 @@ public class RecommendProductType {
 	                	    		H5ClientVersionExample h5ClientVersionExample = new H5ClientVersionExample();
 	                	    		h5ClientVersionExample.createCriteria().andH5AppIdEqualTo(h5AppId)
 	                	    								.andH5ChannelIdEqualTo(h5ChannelId)
+	                	    								.andIsPublishedEqualTo(true)
 	                	    								.andPlatformIdEqualTo(Byte.valueOf(platformId));
 	                	    		List<H5ClientVersion> h5ClientVersions = h5ClientVersionMapper.selectByExample(h5ClientVersionExample);
 	                	    		
@@ -531,7 +532,8 @@ public class RecommendProductType {
                                 				// 匹配了对应的栏位了
                                 				
                                 				// 根据栏位查找产品
-                                                h5ProductIDs = filterProductWithH5ColumnKey(h5Column.getH5ColumnKey());
+                                                h5ProductIDs = filterProductWithH5ColumnKey(
+                                                			h5Column.getH5ColumnKey(), h5ClientVersionId);
                                                 System.out.println("h5ProductIDs：" + h5ProductIDs);
                                                 
                                                 Integer pageNumber = environment.getArgument("pageNumber");
@@ -546,10 +548,11 @@ public class RecommendProductType {
                                                 
                                                 PageHelper.startPage(pageNumber, pageSize);
                                                 Map<String, Object> map = new HashMap<>();
+                                                if(h5ProductIDs != null) {
                                                 map.put("list", h5ProductIDs);
-//                                                List<Product> list = productMapper.selectByExample(productExample);
-                                                products = 
-                                                		productMapper.associateWithH5ProductColumnMapping(map);
+	                                                products = 
+	                                                		productMapper.associateWithH5ProductColumnMapping(map);
+                                                }
                                                 return products;
                                 				
                                 			}
@@ -563,14 +566,16 @@ public class RecommendProductType {
         return h5ListQueryField;
     }
     
-    public static List<Long> filterProductWithH5ColumnKey(String h5Columnkey) {
+    public static List<Long> filterProductWithH5ColumnKey(String h5Columnkey,
+    					long h5ClientVersionId) {
     		List<Long> h5ProductIDs = new ArrayList<>();
     		// 根据栏位
         H5ProductColumnMappingExample h5ProductColumnMappingExample =
         		new H5ProductColumnMappingExample();
         h5ProductColumnMappingExample.createCriteria()
         		.andH5ColumnKeyEqualTo(h5Columnkey)
-        		.andStatusEqualTo((byte) 1);
+        		.andStatusEqualTo((byte) 1)
+        		.andH5ClientVersionIdEqualTo(h5ClientVersionId);
         h5ProductColumnMappingExample.setOrderByClause("sequence desc");
         List<H5ProductColumnMapping> h5ProductColumnMappings = 
         		h5ProductColumnMappingMapper.selectByExample(h5ProductColumnMappingExample);
