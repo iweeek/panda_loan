@@ -22,10 +22,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pinganzhiyuan.mapper.CaptchaMapper;
+import com.pinganzhiyuan.mapper.StDeviceMapper;
 import com.pinganzhiyuan.mapper.TDConfigMapper;
 import com.pinganzhiyuan.mapper.TDDeviceMapper;
 import com.pinganzhiyuan.mapper.UserMapper;
 import com.pinganzhiyuan.model.Captcha;
+import com.pinganzhiyuan.model.StDeviceExample;
 import com.pinganzhiyuan.model.TDConfig;
 import com.pinganzhiyuan.model.TDConfigExample;
 import com.pinganzhiyuan.model.TDDevice;
@@ -54,6 +56,8 @@ public class TDController {
     @Autowired
     TDDeviceMapper tdDeviceMapper;
     
+    @Autowired
+    StDeviceMapper stDeviceMapper;
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @ApiOperation(value = "创建TD激活设备", notes = "创建TD激活设备")
     @RequestMapping(value = { "/tdDevices" }, method = RequestMethod.POST)
@@ -62,13 +66,27 @@ public class TDController {
         
         ResponseBody resBody = new ResponseBody<TDDevice>();
         
-        //判断数据库是否存在历史的判断结果,直接返回
+        //判断数td_device是否存在历史的判断结果,直接返回原始结果
         TDDeviceExample tdDeviceExapmle = new TDDeviceExample();
         tdDeviceExapmle.createCriteria().andChannelIdEqualTo(channelId).andPackageNameEqualTo(packageName).andDeviceIdEqualTo(deviceId);
         if (tdDeviceMapper.selectByExample(tdDeviceExapmle).size() > 0) {
         	resBody.statusMsg = "查询成功";
             resBody.obj1 = tdDeviceMapper.selectByExample(tdDeviceExapmle).get(0);
             return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(resBody);
+        }
+        
+        //判断st_device是否存在历史设备记录,直接返回false
+        StDeviceExample stDeviceExample = new StDeviceExample();
+        stDeviceExample.createCriteria().andChannelIdEqualTo(channelId).andPackageNameEqualTo(packageName).andDeviceIdEqualTo(deviceId);
+        if (stDeviceMapper.selectByExample(stDeviceExample).size() > 0) {
+        	resBody.statusMsg = "设备已存在历史记录";
+        	TDDevice tdDevice = new TDDevice();
+        	tdDevice.setChannelId(channelId);
+        	tdDevice.setPackageName(packageName);
+        	tdDevice.setDeviceId(deviceId);
+        	tdDevice.setSendFlag(false);
+        	resBody.obj1 = tdDevice;
+        	return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(resBody);
         }
         
         Date dt = new Date(System.currentTimeMillis());
