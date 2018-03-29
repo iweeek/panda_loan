@@ -603,6 +603,7 @@
             #{listItem}
 	</foreach>
     and a.is_published = 1
+	and h5_client_version_id = #{h5ClientVersionId}
 	group by a.id
 	order by b.sequence desc, a.weight desc
   </select>

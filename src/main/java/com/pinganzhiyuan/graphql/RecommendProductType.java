@@ -564,6 +564,7 @@ public class RecommendProductType {
                                                 Map<String, Object> map = new HashMap<>();
                                                 if(h5ProductIDs != null) {
                                                 map.put("list", h5ProductIDs);
+                                                map.put("h5ClientVersionId", h5ClientVersionId);
 	                                                products = 
 	                                                		productMapper.associateWithH5ProductColumnMapping(map);
                                                 }
