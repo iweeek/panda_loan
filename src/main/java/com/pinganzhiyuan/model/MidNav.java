@@ -154,9 +154,9 @@ public class MidNav {
         long maxAmount = product.getMaxAmount();
         String secondTag = "";
         if (maxAmount / 10000 >= 1) {
-            secondTag = "æœ?é«?" + maxAmount / 10000 + "ä¸‡å…ƒ";
+            secondTag = "æœ€é«˜" + maxAmount / 10000 + "ä¸‡å…ƒ";
         } else {
-            secondTag = "æœ?é«?" + maxAmount + "å…?";
+            secondTag = "æœ€é«˜" + maxAmount + "å…ƒ";
         }
         midNav.setSubtitle(secondTag);
         return midNav;
