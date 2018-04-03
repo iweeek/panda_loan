@@ -101,7 +101,7 @@ public class TokenController {
             
             String landingChannelUid = request.getHeader("Landing-Channel-Uid");
             if (landingChannelUid != null && !landingChannelUid.equals("")) {
-            	sendMsg("【熊猫贷款】尊敬的会员，您的借款申请已进入快速申请通道，现在借款当日到账，马上打开熊猫贷款app查看吧。", username);
+            	sendMsg("【熊猫贷款】尊敬的会员，您的借款申请已经进入快速审核通道，打开app填写身份信息，马上提现", username);
             }
             
             return ResponseEntity.status(HttpServletResponse.SC_OK).body(resBody);
