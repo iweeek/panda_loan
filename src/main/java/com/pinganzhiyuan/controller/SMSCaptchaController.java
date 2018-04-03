@@ -71,9 +71,10 @@ public class SMSCaptchaController {
         
         if (packageName.equals("com.tainingbank.pingankuaidai")) {
         	s = "【平安快贷】您登录的验证码为：" + captcha.getCaptcha() + "，请不要把验证码泄露给他人。如非本人操作，可不用理会。";
+        } else {
+        	s = "【熊猫贷款】您登录的验证码为：" + captcha.getCaptcha() + "，请不要把验证码泄露给他人。如非本人操作，可不用理会。";
         }
         
-        s = "【熊猫贷款】您登录的验证码为：" + captcha.getCaptcha() + "，请不要把验证码泄露给他人。如非本人操作，可不用理会。";
         byte[] b;
         String msg;
         try {
