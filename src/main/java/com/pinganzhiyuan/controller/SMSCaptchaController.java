@@ -52,7 +52,7 @@ public class SMSCaptchaController {
         //90秒内同一手机不能请求第二次
         if (lastLog != null) {
             if (new Date().getTime() - lastLog.getSendTime().getTime() < 90) {
-                ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(null);  
+                ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(null); 
             }
         }
         
