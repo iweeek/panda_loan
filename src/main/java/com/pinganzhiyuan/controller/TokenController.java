@@ -84,17 +84,17 @@ public class TokenController {
             example.createCriteria().andUsernameEqualTo(username);
             List<User> list = userMapper.selectByExample(example);
             
-//            if (list.size() > 0) {
-//                resBody.statusMsg = "登录成功";
-//                resBody.obj1 = list.get(0);
-//                return ResponseEntity.status(HttpServletResponse.SC_OK).body(resBody);
-//            }
+            if (list.size() > 0) {
+                resBody.statusMsg = "登录成功";
+                resBody.obj1 = list.get(0);
+                return ResponseEntity.status(HttpServletResponse.SC_OK).body(resBody);
+            }
            
             User user = new User();
             user.setUsername(username);
             user.setPassword("");
             user.setRegistTime((new Date()).getTime());
-//            userMapper.insert(user);
+            userMapper.insert(user);
             
             resBody.statusMsg = "登录成功";
             resBody.obj1 = user;
