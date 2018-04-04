@@ -217,16 +217,21 @@ public class IndexController {
 	    String platformId = request.getHeader("Platform-Id");
 	    
 	    if (h5AppId != null && h5ChannelId != null) {
-	    		H5ClientVersionExample h5ClientVersionExample = new H5ClientVersionExample();
-	    		h5ClientVersionExample.createCriteria().andH5AppIdEqualTo(h5AppId)
-	    								.andH5ChannelIdEqualTo(h5ChannelId)
-	    								.andPlatformIdEqualTo(Byte.valueOf(platformId));
-	    		List<H5ClientVersion> h5ClientVersions = h5ClientVersionMapper.selectByExample(h5ClientVersionExample);
-	    		
-	    		if (h5ClientVersions != null && h5ClientVersions.size() != 0) {
-	    			long clientVersionId = h5ClientVersions.get(0).getClientVersionId();
-	    			clientVersion = clientVersionMapper.selectByPrimaryKey(Long.valueOf(clientVersionId));
-	    		}
+    		H5ClientVersionExample h5ClientVersionExample = new H5ClientVersionExample();
+    		h5ClientVersionExample.createCriteria().andH5AppIdEqualTo(h5AppId)
+    								.andH5ChannelIdEqualTo(h5ChannelId);
+//	    							.andPlatformIdEqualTo(Byte.valueOf(platformId));
+    		List<H5ClientVersion> h5ClientVersions = h5ClientVersionMapper.selectByExample(h5ClientVersionExample);
+    		
+    		if (h5ClientVersions != null && h5ClientVersions.size() != 0) {
+    			long clientVersionId = 0;
+    			if (platformId.equals("1")) {
+    				clientVersionId = h5ClientVersions.get(0).getIosClientVersionId();
+    			} else if (platformId.equals("0")) {
+    				clientVersionId = h5ClientVersions.get(0).getClientVersionId();
+    			}
+    			clientVersion = clientVersionMapper.selectByPrimaryKey(Long.valueOf(clientVersionId));
+    		}
 	    }
             
         return ResponseEntity.status(HttpServletResponse.SC_OK).body(clientVersion);

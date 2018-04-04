@@ -539,40 +539,39 @@ public class RecommendProductType {
 	                	    					h5ClientColumnMappingMapper.selectByExample(h5ClientColumnMappingExample);
 	                	    			
 	                	    			Long productTypeId = environment.getArgument("productTypeId");
-                                if (productTypeId != null) {
-                                		H5Column h5Column = h5ColumnMapper.selectByPrimaryKey(productTypeId);
-                                		for (H5ClientColumnMapping h5ClientColumnMapping : h5ClientColumnMappings) {
-                                			if (h5Column.getH5ColumnKey().equals(h5ClientColumnMapping.getH5ColumnKey())) {
-                                				// 匹配了对应的栏位了
-                                				
-                                				// 根据栏位查找产品
-                                                h5ProductIDs = filterProductWithH5ColumnKey(
-                                                			h5Column.getH5ColumnKey(), h5ClientVersionId);
-                                                System.out.println("h5ProductIDs：" + h5ProductIDs);
-                                                
-                                                Integer pageNumber = environment.getArgument("pageNumber");
-                                                if (pageNumber == null) {
-                                                    pageNumber = 1;
-                                                }
-                                                
-                                                Integer pageSize = environment.getArgument("pageSize");
-                                                if (pageSize == null) {
-                                                    pageSize = 10;
-                                                }
-                                                
-                                                PageHelper.startPage(pageNumber, pageSize);
-                                                Map<String, Object> map = new HashMap<>();
-                                                if(h5ProductIDs != null) {
-                                                map.put("list", h5ProductIDs);
-                                                map.put("h5ClientVersionId", h5ClientVersionId);
-	                                                products = 
-	                                                		productMapper.associateWithH5ProductColumnMapping(map);
-                                                }
-                                                return products;
-                                				
-                                			}
-                                		}
-                                }
+		                                if (productTypeId != null) {
+	                                		H5Column h5Column = h5ColumnMapper.selectByPrimaryKey(productTypeId);
+	                                		for (H5ClientColumnMapping h5ClientColumnMapping : h5ClientColumnMappings) {
+	                                			if (h5Column.getH5ColumnKey().equals(h5ClientColumnMapping.getH5ColumnKey())) {
+	                                				// 匹配了对应的栏位了
+	                                				
+	                                				// 根据栏位查找产品
+	                                                h5ProductIDs = filterProductWithH5ColumnKey(
+	                                                			h5Column.getH5ColumnKey(), h5ClientVersionId);
+	                                                System.out.println("h5ProductIDs：" + h5ProductIDs);
+	                                                
+	                                                Integer pageNumber = environment.getArgument("pageNumber");
+	                                                if (pageNumber == null) {
+	                                                    pageNumber = 1;
+	                                                }
+	                                                
+	                                                Integer pageSize = environment.getArgument("pageSize");
+	                                                if (pageSize == null) {
+	                                                    pageSize = 10;
+	                                                }
+	                                                
+	                                                PageHelper.startPage(pageNumber, pageSize);
+	                                                Map<String, Object> map = new HashMap<>();
+	                                                if(h5ProductIDs != null) {
+	                                                map.put("list", h5ProductIDs);
+	                                                map.put("h5ClientVersionId", h5ClientVersionId);
+		                                                products = 
+		                                                		productMapper.associateWithH5ProductColumnMapping(map);
+	                                                }
+	                                                return products;
+	                                			}
+	                                		}
+		                                }
 	                	    		}
 	                	    }
 	                	    return products;
