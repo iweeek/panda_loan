@@ -43,7 +43,8 @@ public class SMSCaptchaController {
     
     @ApiOperation(value = "创建验证码", notes = "创建验证码，将创建好的验证码存入数据库中")
     @RequestMapping(value = { "/smsCaptcha" }, method = RequestMethod.POST)
-    public ResponseEntity<?> create(@ApiParam("用户电话号码") @RequestParam String phone) {
+    public ResponseEntity<?> create(HttpServletRequest request,
+    		@ApiParam("用户电话号码") @RequestParam String phone) {
         
         SMSLog log = new SMSLog();
         SMSLog lastLog = captchaService.getLastSMSByPhone(phone);
@@ -51,7 +52,7 @@ public class SMSCaptchaController {
         //90秒内同一手机不能请求第二次
         if (lastLog != null) {
             if (new Date().getTime() - lastLog.getSendTime().getTime() < 90) {
-                ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(null);  
+                ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(null); 
             }
         }
         
@@ -64,7 +65,19 @@ public class SMSCaptchaController {
         object.put("account", "N2500774");
         object.put("password", "mcyPEAo6eRc3a4");
         
-        String s = "【熊猫贷款】您登录的验证码为：" + captcha.getCaptcha() + "，请不要把验证码泄露给他人。如非本人操作，可不用理会。";
+        String packageName = request.getHeader("Package-Name");
+        
+        String s = "";
+        if (packageName != null) {
+	        if (packageName.equals("com.tainingbank.pingankuaidai")) {
+	        	s = "【平安快贷】您登录的验证码为：" + captcha.getCaptcha() + "，请不要把验证码泄露给他人。如非本人操作，可不用理会。";
+	        } else {
+	        	s = "【熊猫贷款】您登录的验证码为：" + captcha.getCaptcha() + "，请不要把验证码泄露给他人。如非本人操作，可不用理会。";
+	        }
+        } else {
+        	s = "【熊猫贷款】您登录的验证码为：" + captcha.getCaptcha() + "，请不要把验证码泄露给他人。如非本人操作，可不用理会。";
+        }
+        
         byte[] b;
         String msg;
         try {
