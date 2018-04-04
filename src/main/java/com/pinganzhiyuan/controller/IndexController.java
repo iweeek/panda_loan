@@ -3,7 +3,9 @@ package com.pinganzhiyuan.controller;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pinganzhiyuan.mapper.ClientMapper;
 import com.pinganzhiyuan.mapper.ClientVersionMapper;
 import com.pinganzhiyuan.mapper.H5AppClientMapper;
 import com.pinganzhiyuan.mapper.H5AppDownloadLogMapper;
@@ -25,6 +28,9 @@ import com.pinganzhiyuan.mapper.LandingChannelMapper;
 import com.pinganzhiyuan.mapper.LandingDeviceLogMapper;
 import com.pinganzhiyuan.mapper.LenderAccessLogMapper;
 import com.pinganzhiyuan.mapper.ProductMapper;
+import com.pinganzhiyuan.mapper.UserMapper;
+import com.pinganzhiyuan.model.Client;
+import com.pinganzhiyuan.model.ClientExample;
 import com.pinganzhiyuan.model.ClientVersion;
 import com.pinganzhiyuan.model.ClientVersionExample;
 import com.pinganzhiyuan.model.H5AppClient;
@@ -37,7 +43,18 @@ import com.pinganzhiyuan.model.LandingChannelExample;
 import com.pinganzhiyuan.model.LandingDeviceLog;
 import com.pinganzhiyuan.model.LenderAccessLog;
 import com.pinganzhiyuan.model.Product;
+import com.pinganzhiyuan.model.User;
+import com.pinganzhiyuan.model.UserExample;
+import com.pinganzhiyuan.util.ResponseBody;
 
+/**
+ * 
+ * @ClassName: IndexController 
+ * @Description: 
+ * @author: nijun
+ * @date: Mar 30, 2018 11:35:09 AM
+ *
+ */
 @RestController
 public class IndexController {
     
@@ -60,6 +77,10 @@ public class IndexController {
     private ClientVersionMapper clientVersionMapper;
     @Autowired
     private H5AppDownloadLogMapper h5AppDownloadLogMapper;
+    @Autowired
+    private ClientMapper clientMapper;
+    @Autowired
+    private UserMapper userMapper;
     
     @RequestMapping(value="/record", method = RequestMethod.GET)
     public void record(HttpServletRequest request, HttpServletResponse response) {
@@ -262,4 +283,55 @@ public class IndexController {
 	    return ResponseEntity.status(HttpServletResponse.SC_OK).body(null);
 	}
     
+	@RequestMapping(value = "/redirectH5", method = RequestMethod.GET)
+    public void redirectH5(HttpServletRequest request, HttpServletResponse response) {
+		StringBuilder builder = new StringBuilder();
+		
+//		String uri = request.getHeader("Request-Uri");
+//		builder.append(uri);
+		
+		//TODO 这里需要修改
+		String packageName = request.getHeader("Package-Name");
+		if (packageName.equals("com.pinganzhiyuan.xiaohuabaika") || 
+        		packageName.equals("com.limafintech.xiaohuabaika")) {
+			builder.append("http://119.23.236.252:85/#/xhconter");
+        } else if (packageName.equals("com.lmjr.xiaoyingbaika") || 
+        		packageName.equals("com.xmnjzy-Investment.xiaoyingbaika")) {
+        	builder.append("http://119.23.236.252:85/#/xyconter");
+        } else if (packageName.equals("com.lmjr.noworryturnover") || 
+        		packageName.equals("com.guangrong-Information.mochouzhouzhuan")) {
+        	builder.append("http://119.23.236.252:85/#/mcconter");
+        }
+		
+		if (packageName != null) {
+        	builder.append("?packageName=" + packageName);
+        }
+		
+		String userId = request.getHeader("User-Id");
+		ClientExample example = new ClientExample();
+		example.createCriteria().andUserIdEqualTo(Long.valueOf(userId));
+		List<Client> list = clientMapper.selectByExample(example);
+
+		if (list != null && list.size() != 0) {
+			builder.append("&isCertified=1");
+			builder.append("&name=" + list.get(0).getName());
+		} else {
+			builder.append("&isCertified=0");
+		}
+		
+		UserExample userExample = new UserExample();
+		User user = userMapper.selectByPrimaryKey(Long.valueOf(userId));
+		if (user != null) {
+			builder.append("&phone=" + user.getUsername());
+		}
+		
+		String version = request.getHeader("Version");
+		builder.append("&versionCode=" + version);
+        	
+        try {
+			response.sendRedirect(builder.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }
