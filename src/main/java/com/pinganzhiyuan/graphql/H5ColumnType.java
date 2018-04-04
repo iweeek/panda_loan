@@ -121,7 +121,7 @@ public class H5ColumnType {
 	                	    		if (h5AppClients != null && h5AppClients.size() != 0) {
 	                	    			h5AppId = h5AppClients.get(0).getId();
 	                	    		}
-	                	    }
+	                	    }	
 	                	    
 	                	    String landingChannelUid = environment.getArgument("h5ChannelUid");
 	                	    LandingChannelExample landingChannelExample = new LandingChannelExample();
