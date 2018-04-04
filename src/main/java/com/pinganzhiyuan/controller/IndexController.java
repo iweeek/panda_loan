@@ -283,14 +283,29 @@ public class IndexController {
 	    return ResponseEntity.status(HttpServletResponse.SC_OK).body(null);
 	}
     
-	@RequestMapping(value = "/redirectH5", method = RequestMethod.POST)
+	@RequestMapping(value = "/redirectH5", method = RequestMethod.GET)
     public void redirectH5(HttpServletRequest request, HttpServletResponse response) {
-		ResponseBody resBody = new ResponseBody<>();
-		Map<String, Object> resultMap = new HashMap<String, Object>();
 		StringBuilder builder = new StringBuilder();
 		
-		String uri = request.getHeader("Request-Uri");
-		builder.append(uri);
+//		String uri = request.getHeader("Request-Uri");
+//		builder.append(uri);
+		
+		//TODO 这里需要修改
+		String packageName = request.getHeader("Package-Name");
+		if (packageName.equals("com.pinganzhiyuan.xiaohuabaika") || 
+        		packageName.equals("com.limafintech.xiaohuabaika")) {
+			builder.append("http://119.23.236.252:85/#/xhconter");
+        } else if (packageName.equals("com.lmjr.xiaoyingbaika") || 
+        		packageName.equals("com.xmnjzy-Investment.xiaoyingbaika")) {
+        	builder.append("http://119.23.236.252:85/#/xyconter");
+        } else if (packageName.equals("com.lmjr.noworryturnover") || 
+        		packageName.equals("com.guangrong-Information.mochouzhouzhuan")) {
+        	builder.append("http://119.23.236.252:85/#/mcconter");
+        }
+		
+		if (packageName != null) {
+        	builder.append("?packageName=" + packageName);
+        }
 		
 		String userId = request.getHeader("User-Id");
 		ClientExample example = new ClientExample();
@@ -298,35 +313,25 @@ public class IndexController {
 		List<Client> list = clientMapper.selectByExample(example);
 
 		if (list != null && list.size() != 0) {
-			builder.append("?isCertified=1");
+			builder.append("&isCertified=1");
 			builder.append("&name=" + list.get(0).getName());
-//			resultMap.put("isCertified", true);
-//			resultMap.put("name", list.get(0).getName());
-			
-			UserExample userExample = new UserExample();
-			User user = userMapper.selectByPrimaryKey(Long.valueOf(userId));
-			if (user != null) {
-//				resultMap.put("phone", user.getUsername());
-				builder.append("&phone=" + user.getUsername());
-			}
+		} else {
+			builder.append("&isCertified=0");
 		}
 		
-		 String version = request.getHeader("Version");
-//		 resultMap.put("versionCode", version);
-		 builder.append("&versionCode=" + version);
-		 
-		 String packageName = request.getHeader("Package-Name");
-         if (packageName != null) {
-//        	 	resultMap.put("packageName", packageName);
-        	 	builder.append("&packageName=" + packageName);
-         }
-
-//         resBody.obj1 = resultMap;
-         try {
+		UserExample userExample = new UserExample();
+		User user = userMapper.selectByPrimaryKey(Long.valueOf(userId));
+		if (user != null) {
+			builder.append("&phone=" + user.getUsername());
+		}
+		
+		String version = request.getHeader("Version");
+		builder.append("&versionCode=" + version);
+        	
+        try {
 			response.sendRedirect(builder.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 	}
 }
