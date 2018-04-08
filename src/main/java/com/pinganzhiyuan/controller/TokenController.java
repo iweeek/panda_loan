@@ -30,10 +30,12 @@ import com.pinganzhiyuan.service.TokenService;
 import com.pinganzhiyuan.util.ResponseBody;
 import com.pinganzhiyuan.util.SMSUtil;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 
+@Api(tags = "登录验证相关接口")
 @RestController
 public class TokenController {
     

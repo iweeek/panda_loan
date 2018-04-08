@@ -29,9 +29,11 @@ import com.pinganzhiyuan.util.CaptchaUtil;
 import com.pinganzhiyuan.util.ResponseBody;
 import com.pinganzhiyuan.util.SMSUtil;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
+@Api(tags = "短信验证相关接口")
 @RestController
 public class SMSCaptchaController {
     
@@ -67,13 +69,20 @@ public class SMSCaptchaController {
         
         String packageName = request.getHeader("Package-Name");
         
+        String h5WebName = request.getHeader("H5-Web-Name");
         String s = "";
         if (packageName != null) {
 	        if (packageName.equals("com.tainingbank.pingankuaidai")) {
 	        	s = "【平安快贷】您登录的验证码为：" + captcha.getCaptcha() + "，请不要把验证码泄露给他人。如非本人操作，可不用理会。";
 	        } else {
 	        	s = "【熊猫贷款】您登录的验证码为：" + captcha.getCaptcha() + "，请不要把验证码泄露给他人。如非本人操作，可不用理会。";
-	        }
+	        } 
+        } else if (h5WebName != null) {
+        	if (h5WebName.equals("baofenglogin")) {
+	        	s = "【暴风借到】您登录的验证码为：" + captcha.getCaptcha() + "，请不要把验证码泄露给他人。如非本人操作，可不用理会。";
+	        } else {
+	        	s = "【熊猫贷款】您登录的验证码为：" + captcha.getCaptcha() + "，请不要把验证码泄露给他人。如非本人操作，可不用理会。";
+	        } 
         } else {
         	s = "【熊猫贷款】您登录的验证码为：" + captcha.getCaptcha() + "，请不要把验证码泄露给他人。如非本人操作，可不用理会。";
         }

@@ -3,6 +3,7 @@ package com.pinganzhiyuan.controller;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,9 @@ import com.pinganzhiyuan.model.User;
 import com.pinganzhiyuan.model.UserExample;
 import com.pinganzhiyuan.util.ResponseBody;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 /**
  * 
  * @ClassName: IndexController 
@@ -55,6 +59,7 @@ import com.pinganzhiyuan.util.ResponseBody;
  * @date: Mar 30, 2018 11:35:09 AM
  *
  */
+@Api(tags = "日志记录相关接口")
 @RestController
 public class IndexController {
     
@@ -82,6 +87,7 @@ public class IndexController {
     @Autowired
     private UserMapper userMapper;
     
+    @ApiOperation(value = "客户端访问统计", notes = "统计 device_log")
     @RequestMapping(value="/record", method = RequestMethod.GET)
     public void record(HttpServletRequest request, HttpServletResponse response) {
         
@@ -118,6 +124,7 @@ public class IndexController {
      * @param response
      * @return
      */
+    @ApiOperation(value = "H5访问统计", notes = "统计 H5 页面的相关访问记录")
 	@RequestMapping(value = "/recordH5", method = RequestMethod.POST)
     public ResponseEntity<?> recordH5(@RequestParam(name = "userId", required = false) String userId,
                             @RequestParam(name = "pid", required = false) String productId,
@@ -188,6 +195,7 @@ public class IndexController {
         }
     }
 	
+    @ApiOperation(value = "H5下载链接获取", notes = "根据H5页面、渠道、平台，返回相应的下载链接")
 	@RequestMapping(value = "/h5DownloadUrl", method = RequestMethod.POST)
     public ResponseEntity<?> getDownloadUrl(
                             HttpServletRequest request, HttpServletResponse response) {
@@ -212,7 +220,7 @@ public class IndexController {
 	    List<LandingChannel> landingChannel = landingChannelMapper.selectByExample(example);
 	    if (landingChannel != null && landingChannel.size() != 0) {
 	    		h5ChannelId = landingChannel.get(0).getId();
-	    } 
+	    }	
 	    
 	    String platformId = request.getHeader("Platform-Id");
 	    
@@ -237,6 +245,7 @@ public class IndexController {
         return ResponseEntity.status(HttpServletResponse.SC_OK).body(clientVersion);
     }
 	
+    @ApiOperation(value = "统计下载次数", notes = "统计下载次数")
 	@RequestMapping(value = "/recordDownload", method = RequestMethod.POST)
     public ResponseEntity<?> recordDownload(@RequestParam(name = "userId", required = false) String userId,
                             @RequestParam(name = "downloadUrl", required = false) String downloadUrl,
@@ -288,6 +297,7 @@ public class IndexController {
 	    return ResponseEntity.status(HttpServletResponse.SC_OK).body(null);
 	}
     
+    @ApiOperation(value = "跳转H5", notes = "根据不同APP跳转相应的页面")
 	@RequestMapping(value = "/redirectH5", method = RequestMethod.GET)
     public void redirectH5(HttpServletRequest request, HttpServletResponse response) {
 		StringBuilder builder = new StringBuilder();
@@ -299,13 +309,20 @@ public class IndexController {
 		String packageName = request.getHeader("Package-Name");
 		if (packageName.equals("com.pinganzhiyuan.xiaohuabaika") || 
         		packageName.equals("com.limafintech.xiaohuabaika")) {
-			builder.append("http://119.23.236.252:85/#/xhconter");
+			builder.append("http://119.23.12.36:84/panda_loan_mobile_web/#/xhconter");
+//			builder.append("http://192.168.2.156:8228/panda_loan_mobile_web/#/xhconter");
         } else if (packageName.equals("com.lmjr.xiaoyingbaika") || 
         		packageName.equals("com.xmnjzy-Investment.xiaoyingbaika")) {
-        	builder.append("http://119.23.236.252:85/#/xyconter");
+        	builder.append("http://119.23.12.36:84/panda_loan_mobile_web/#/xyconter");
+//        	builder.append("http://192.168.2.156:8228/panda_loan_mobile_web/#/xyconter");
         } else if (packageName.equals("com.lmjr.noworryturnover") || 
         		packageName.equals("com.guangrong-Information.mochouzhouzhuan")) {
-        	builder.append("http://119.23.236.252:85/#/mcconter");
+        	builder.append("http://119.23.12.36:84/panda_loan_mobile_web/#/mcconter");
+//        	builder.append("http://192.168.2.156:8228/panda_loan_mobile_web/#/mcconter");
+        } else if (packageName.equals("com.lmjr.noworryturnover") || 
+        		packageName.equals("com.chunqi.suibianhua")) {
+        	builder.append("http://119.23.12.36:84/panda_loan_mobile_web/#/axhconter");
+//        	builder.append("http://192.168.2.156:8228/panda_loan_mobile_web/#/axhconter");
         }
 		
 		if (packageName != null) {
@@ -319,7 +336,14 @@ public class IndexController {
 
 		if (list != null && list.size() != 0) {
 			builder.append("&isCertified=1");
-			builder.append("&name=" + list.get(0).getName());
+			String encode = "";
+			try {
+				encode = URLEncoder.encode(list.get(0).getName(), "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			builder.append("&name=" + encode);
 		} else {
 			builder.append("&isCertified=0");
 		}
@@ -334,6 +358,7 @@ public class IndexController {
 		builder.append("&versionCode=" + version);
         	
         try {
+//        	String encode = URLEncoder.encode(builder.toString(), "UTF-8");
 			response.sendRedirect(builder.toString());
 		} catch (IOException e) {
 			e.printStackTrace();

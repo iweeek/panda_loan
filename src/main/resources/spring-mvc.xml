@@ -71,6 +71,7 @@
             <mvc:mapping path="/clients/**"/>
             <mvc:mapping path="/landingPage/**"/>
             <mvc:mapping path="/recordH5/**"/>
+            <!-- <mvc:exclude-mapping path="/swagger/**"/> -->
             <bean class="com.pinganzhiyuan.interceptor.DeviceInterceptor"></bean>
         </mvc:interceptor>
     </mvc:interceptors> 
