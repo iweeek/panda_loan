@@ -29,9 +29,11 @@ import com.pinganzhiyuan.util.CaptchaUtil;
 import com.pinganzhiyuan.util.ResponseBody;
 import com.pinganzhiyuan.util.SMSUtil;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
+@Api(tags = "短信验证相关接口")
 @RestController
 public class SMSCaptchaController {
     
