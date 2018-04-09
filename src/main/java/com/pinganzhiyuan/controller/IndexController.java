@@ -309,19 +309,27 @@ public class IndexController {
 		String packageName = request.getHeader("Package-Name");
 		if (packageName.equals("com.pinganzhiyuan.xiaohuabaika") || 
         		packageName.equals("com.limafintech.xiaohuabaika")) {
-			builder.append("http://119.23.12.36:84/panda_loan_mobile_web/#/xhconter");
+			builder.append("http://www.pinganzhiyuan.com/panda_loan_app_web/xhconter");
+//			builder.append("http://119.23.236.252:83/panda_loan_mobile_web/xhconter");
+//			builder.append("http://119.23.12.36:84/panda_loan_mobile_web/#/xhconter");
 //			builder.append("http://192.168.2.156:8228/panda_loan_mobile_web/#/xhconter");
         } else if (packageName.equals("com.lmjr.xiaoyingbaika") || 
         		packageName.equals("com.xmnjzy-Investment.xiaoyingbaika")) {
-        	builder.append("http://119.23.12.36:84/panda_loan_mobile_web/#/xyconter");
+        	builder.append("http://www.pinganzhiyuan.com/panda_loan_app_web/xyconter");
+//        	builder.append("http://119.23.236.252:83/panda_loan_mobile_web/xyconter");
+//        	builder.append("http://119.23.12.36:84/panda_loan_mobile_web/#/xyconter");
 //        	builder.append("http://192.168.2.156:8228/panda_loan_mobile_web/#/xyconter");
         } else if (packageName.equals("com.lmjr.noworryturnover") || 
         		packageName.equals("com.guangrong-Information.mochouzhouzhuan")) {
-        	builder.append("http://119.23.12.36:84/panda_loan_mobile_web/#/mcconter");
+        	builder.append("http://www.pinganzhiyuan.com/panda_loan_app_web/mcconter");
+//        	builder.append("http://119.23.236.252:83/panda_loan_mobile_web/mcconter");
+//        	builder.append("http://119.23.12.36:84/panda_loan_mobile_web/#/mcconter");
 //        	builder.append("http://192.168.2.156:8228/panda_loan_mobile_web/#/mcconter");
         } else if (packageName.equals("com.lmjr.noworryturnover") || 
         		packageName.equals("com.chunqi.suibianhua")) {
-        	builder.append("http://119.23.12.36:84/panda_loan_mobile_web/#/axhconter");
+        	builder.append("http://www.pinganzhiyuan.com/panda_loan_app_web/axhconter");
+ //       	builder.append("http://119.23.236.252:83/panda_loan_mobile_web/axhconter");
+//        	builder.append("http://119.23.12.36:84/panda_loan_mobile_web/#/axhconter");
 //        	builder.append("http://192.168.2.156:8228/panda_loan_mobile_web/#/axhconter");
         }
 		
